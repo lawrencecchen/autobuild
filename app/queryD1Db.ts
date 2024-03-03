@@ -39,3 +39,8 @@ export async function queryDatabase<T>({
     (response) => response.json() as Promise<QueryDbResponse<T>>
   );
 }
+export type QueryDatabaseFunction = typeof queryDatabase;
+export type RunQueryFunction = (input: {
+  sql: string;
+  params: unknown[];
+}) => Promise<QueryDbResponse<any>>;

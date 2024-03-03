@@ -57,3 +57,6 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+.cm-scroller { overflow: auto; min-height: 100px }

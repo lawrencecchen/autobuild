@@ -71,6 +71,7 @@ export default function RootLayout({
           </Providers>
         </AI>
         {/* <Analytics /> */}
+        <div id="portal" />
       </body>
     </html>
   );

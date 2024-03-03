@@ -294,10 +294,26 @@ ${databaseSchema}`,
 
   completion.onFunctionCall("run_sql", async ({ sql, params }) => {
     const isQuerySafe = getIsQuerySafe(sql);
+    async function runQuery({
+      sql,
+      params,
+    }: {
+      sql: string;
+      params: unknown[];
+    }) {
+      "use server";
+      const result = await queryDatabase<any>({
+        databaseIdentifier: "61495fe1-331e-41e4-b235-f7672ca1b5c5",
+        accountIdentifier: process.env.CLOUDFLARE_ACCOUNT_ID!,
+        bearerToken: process.env.CLOUDFLARE_API_TOKEN!,
+        sql,
+        params,
+      });
+      return result;
+    }
     reply.update(
       <BotCard>
-        <RunSQL sql={sql} params={params} />
-        {isQuerySafe && <div>Running query...</div>}
+        <RunSQL sql={sql} params={params} runQuery={runQuery} />
       </BotCard>
     );
     if (isQuerySafe) {
@@ -308,18 +324,14 @@ ${databaseSchema}`,
         sql,
         params,
       });
-      const rows = result.result[0].results;
-      const columns = Object.keys(rows[0] ?? {}).map((key) => ({
-        title: key,
-        id: key,
-        width: undefined as unknown as number,
-      }));
       reply.done(
         <BotCard>
-          <RunSQL sql={sql} params={params} />
-          <div className="flex min-h-[280px] flex-col">
-            <Table data={rows} columns={columns} />
-          </div>
+          <RunSQL
+            sql={sql}
+            params={params}
+            runQuery={runQuery}
+            initialData={result}
+          />
         </BotCard>
       );
     }
