@@ -1,12 +1,12 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 import {
   IconGitHub,
   IconSeparator,
   IconSparkles,
   IconVercel,
-} from '@/components/ui/icons';
-import { Button } from '@/components/ui/button';
+} from "@/components/ui/icons";
+import { Button } from "@/components/ui/button";
 
 export async function Header() {
   return (
@@ -19,7 +19,7 @@ export async function Header() {
         <Link href="/">
           <span className="text-lg font-bold">
             <IconSparkles className="inline mr-0 w-4 sm:w-5 mb-0.5" />
-            AI
+            Autobuild
           </span>
         </Link>
       </span>
@@ -27,14 +27,14 @@ export async function Header() {
         <Button variant="outline" asChild>
           <a
             target="_blank"
-            href="https://github.com/vercel/ai/tree/main/examples/next-ai-rsc"
+            href="https://github.com/lawrencecchen/autobuild"
             rel="noopener noreferrer"
           >
             <IconGitHub />
             <span className="hidden ml-2 md:flex">GitHub</span>
           </a>
         </Button>
-        <Button asChild>
+        {/* <Button asChild>
           <a
             href="https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fai%2Fblob%2Fmain%2Fexamples%2Fnext-ai-rsc&env=OPENAI_API_KEY&envDescription=OpenAI+API+Key&envLink=https%3A%2F%2Fplatform.openai.com%2Fapi-keys"
             target="_blank"
@@ -43,7 +43,7 @@ export async function Header() {
             <span className="hidden sm:block">Deploy to Vercel</span>
             <span className="sm:hidden">Deploy</span>
           </a>
-        </Button>
+        </Button> */}
       </div>
     </header>
   );
