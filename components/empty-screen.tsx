@@ -4,16 +4,16 @@ import { IconArrowRight } from "@/components/ui/icons";
 
 const exampleMessages = [
   {
-    heading: "What are the trending stocks?",
-    message: "What are the trending stocks?",
+    heading: "Show all customers.",
+    message: "Show all customers.",
   },
   {
-    heading: "What's the stock price of AAPL?",
-    message: "What's the stock price of AAPL?",
+    heading: "Who are my best employees?",
+    message: "Who are my best employees?",
   },
   {
-    heading: "I'd like to buy 10 shares of MSFT",
-    message: "I'd like to buy 10 shares of MSFT",
+    heading: "Which products are most popular?",
+    message: "Which products are most popular?",
   },
 ];
 

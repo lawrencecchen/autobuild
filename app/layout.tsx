@@ -71,7 +71,10 @@ export default function RootLayout({
           </Providers>
         </AI>
         {/* <Analytics /> */}
-        <div id="portal" />
+        <div
+          id="portal"
+          style={{ position: "fixed", left: 0, top: 0, zIndex: 9999 }}
+        />
       </body>
     </html>
   );

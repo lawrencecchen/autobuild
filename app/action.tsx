@@ -2,6 +2,7 @@ import "server-only";
 
 import { createAI, createStreamableUI, getMutableAIState } from "ai/rsc";
 import OpenAI from "openai";
+import { format } from "sql-formatter";
 
 import {
   spinner,
@@ -283,9 +284,11 @@ ${databaseSchema}`,
   //     ],
   //     temperature: 0,
   //   });
+  let lastAssistantContent = "";
 
   completion.onTextContent((content: string, isFinal: boolean) => {
-    reply.update(<BotMessage>{content}</BotMessage>);
+    lastAssistantContent = content.split(`{"function_call"`)[0];
+    reply.update(<BotMessage>{lastAssistantContent}</BotMessage>);
     if (isFinal) {
       reply.done();
       aiState.done([...aiState.get(), { role: "assistant", content }]);
@@ -294,6 +297,7 @@ ${databaseSchema}`,
 
   completion.onFunctionCall("run_sql", async ({ sql, params }) => {
     const isQuerySafe = getIsQuerySafe(sql);
+    sql = format(sql, { language: "sqlite" });
     async function runQuery({
       sql,
       params,
@@ -312,9 +316,14 @@ ${databaseSchema}`,
       return result;
     }
     reply.update(
-      <BotCard>
-        <RunSQL sql={sql} params={params} runQuery={runQuery} />
-      </BotCard>
+      <>
+        {lastAssistantContent && (
+          <BotMessage>{lastAssistantContent}</BotMessage>
+        )}
+        <BotCard>
+          <RunSQL sql={sql} params={params} runQuery={runQuery} />
+        </BotCard>
+      </>
     );
     const result = isQuerySafe
       ? await queryDatabase<any>({
@@ -326,14 +335,19 @@ ${databaseSchema}`,
         })
       : undefined;
     reply.update(
-      <BotCard>
-        <RunSQL
-          sql={sql}
-          params={params}
-          runQuery={runQuery}
-          initialData={result}
-        />
-      </BotCard>
+      <>
+        {lastAssistantContent && (
+          <BotMessage>{lastAssistantContent}</BotMessage>
+        )}
+        <BotCard>
+          <RunSQL
+            sql={sql}
+            params={params}
+            runQuery={runQuery}
+            initialData={result}
+          />
+        </BotCard>
+      </>
     );
 
     function toCSV(json: any) {

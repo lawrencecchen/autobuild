@@ -58,7 +58,7 @@ export function RunSQL({
   }, []);
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="grow overflow-hidden rounded">
+      <div className="grow overflow-hidden min-w-0 rounded">
         <ReactCodeMirror
           value={sql}
           onChange={onSqlChange}
@@ -67,7 +67,7 @@ export function RunSQL({
           theme={"light"}
         />
       </div>
-      <div className="grow overflow-hidden rounded">
+      <div className="grow overflow-hidden min-w-0 rounded">
         <ReactCodeMirror
           value={params}
           onChange={onParamsChange}

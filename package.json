@@ -41,6 +41,7 @@
     "react-intersection-observer": "^9.8.0",
     "react-responsive-carousel": "^3.2.23",
     "react-textarea-autosize": "^8.5.3",
+    "sql-formatter": "^15.2.0",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^2.15.1",
