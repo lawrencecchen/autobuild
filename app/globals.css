@@ -58,5 +58,9 @@
   }
 }
 
-
-.cm-scroller { overflow: auto; min-height: 100px }
+/* .ͼ1 .cm-scroller {
+  overflow: auto;
+  min-height: 100px;
+  font-size: 12px;
+  font-family: var(--font-geist-mono);
+} */

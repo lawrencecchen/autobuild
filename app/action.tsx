@@ -316,32 +316,48 @@ ${databaseSchema}`,
         <RunSQL sql={sql} params={params} runQuery={runQuery} />
       </BotCard>
     );
-    if (isQuerySafe) {
-      const result = await queryDatabase<any>({
-        databaseIdentifier: "61495fe1-331e-41e4-b235-f7672ca1b5c5",
-        accountIdentifier: process.env.CLOUDFLARE_ACCOUNT_ID!,
-        bearerToken: process.env.CLOUDFLARE_API_TOKEN!,
-        sql,
-        params,
+    const result = isQuerySafe
+      ? await queryDatabase<any>({
+          databaseIdentifier: "61495fe1-331e-41e4-b235-f7672ca1b5c5",
+          accountIdentifier: process.env.CLOUDFLARE_ACCOUNT_ID!,
+          bearerToken: process.env.CLOUDFLARE_API_TOKEN!,
+          sql,
+          params,
+        })
+      : undefined;
+    reply.update(
+      <BotCard>
+        <RunSQL
+          sql={sql}
+          params={params}
+          runQuery={runQuery}
+          initialData={result}
+        />
+      </BotCard>
+    );
+
+    function toCSV(json: any) {
+      const keys = Object.keys(json[0]);
+      let csv = keys.map((key) => key).join(",");
+      json.forEach((row: any) => {
+        const values = keys.map((key) => row[key]);
+        csv += "\n" + values.join(",");
       });
-      reply.done(
-        <BotCard>
-          <RunSQL
-            sql={sql}
-            params={params}
-            runQuery={runQuery}
-            initialData={result}
-          />
-        </BotCard>
-      );
+      return csv;
     }
+
+    const formattedResult = result
+      ? result.errors.length > 0
+        ? "Errors:\n" + result.errors.map((x) => JSON.stringify(x)).join("\n\n")
+        : "First 5 rows:\n" + toCSV(result.result[0].results.slice(0, 5))
+      : "Waiting for user to execute query.";
 
     aiState.done([
       ...aiState.get(),
       {
         role: "function",
         name: "show_run_sql",
-        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}]`,
+        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}]`,
       },
     ]);
   });

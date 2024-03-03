@@ -36,12 +36,12 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
-};
+// export const viewport = {
+//   themeColor: [
+//     { media: "(prefers-color-scheme: light)", color: "white" },
+//     { media: "(prefers-color-scheme: dark)", color: "black" },
+//   ],
+// };
 
 export default function RootLayout({
   children,
@@ -58,8 +58,8 @@ export default function RootLayout({
         <AI>
           <Providers
             attribute="class"
-            defaultTheme="system"
-            enableSystem
+            defaultTheme="light"
+            // enableSystem
             disableTransitionOnChange
           >
             <div className="flex flex-col min-h-screen">

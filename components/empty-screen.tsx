@@ -23,14 +23,12 @@ export function EmptyScreen({
   submitMessage: (message: string) => void;
 }) {
   return (
-    <div className="mx-auto max-w-2xl px-4">
+    <div className="mx-auto max-w-4xl px-4">
       <div className="rounded-lg border bg-background p-8 mb-4">
-        <h1 className="mb-2 text-lg font-semibold">
-          Welcome to AI SDK 3.0 Generative UI demo!
-        </h1>
+        <h1 className="mb-2 text-lg font-semibold">Talk to your database</h1>
         <p className="mb-2 leading-normal text-muted-foreground">
-          This is a demo of an interactive financial assistant. It can show you
-          stocks, tell you their prices, and even help you buy shares.
+          This is a demo of an interactive database assistant. It can write SQL
+          queries, and make safe updates/inserts/deletes to your database.
         </p>
         <p className="mb-2 leading-normal text-muted-foreground">
           The demo is built with{" "}
