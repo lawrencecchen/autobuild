@@ -16,8 +16,8 @@ const meta = {
 export const metadata: Metadata = {
   ...meta,
   title: {
-    default: "AI RSC Demo",
-    template: `%s - AI RSC Demo`,
+    default: "Autobuild",
+    template: `%s - Autobuild`,
   },
   icons: {
     icon: "/favicon.ico",
