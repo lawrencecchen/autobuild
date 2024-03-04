@@ -15,10 +15,12 @@ import {
   spinner,
 } from "@/components/llm-stocks";
 
-import { Continue, RenderReact, RunSQL } from "@/components/autobuild";
+import { RenderReact, RunSQL } from "@/components/autobuild";
 import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
 import { StockSkeleton } from "@/components/llm-stocks/stock-skeleton";
 import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
+import { createDenoDeployEndpoint } from "@/lib/deploy/createDenoDeployEndpoint";
+import { queryDatabaseProgram } from "@/lib/deploy/programs";
 import {
   formatNumber,
   runAsyncFnWithoutBlocking,
@@ -28,8 +30,6 @@ import {
 import { z } from "zod";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
 import { queryDatabase } from "./queryD1Db";
-import { createDenoDeployEndpoint } from "@/lib/deploy/createDenoDeployEndpoint";
-import { queryDatabaseProgram } from "@/lib/deploy/programs";
 
 function escapeBackticks(s: string) {
   return s.replace(/`/g, "\\`");
@@ -447,7 +447,7 @@ export default async function handler(req: Request): Promise<Response> {
             endpointUrl={endpoint.url}
           />
         </BotCard>
-        <Continue />
+        {/* <Continue /> */}
       </>
     );
 
