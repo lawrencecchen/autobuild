@@ -1,12 +1,52 @@
 import { EditorView } from "@codemirror/view";
-import { useCallback, useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { javascript } from "@codemirror/lang-javascript";
 import ReactCodeMirror from "@uiw/react-codemirror";
+import { useWebContainer } from "@/lib/hooks/useWebContainer";
+import { WebContainer } from "@webcontainer/api";
 
+function convertToWebContainerUrl(
+  creationId: string,
+  webContainerUrl: string
+): string {
+  return `${webContainerUrl}/?component=${creationId}`;
+}
+
+function RenderReactIframe({
+  id,
+  code,
+  render,
+}: {
+  id: string;
+  code: string;
+  render: string;
+}) {
+  const sandbox = useWebContainer();
+  const mainIframePreviewUrl = sandbox.url;
+  const mainIframePreviewRef = useRef<HTMLIFrameElement>(null);
+  if (!mainIframePreviewUrl) {
+    return null;
+  }
+  return (
+    <iframe src={mainIframePreviewUrl} ref={mainIframePreviewRef}></iframe>
+  );
+}
+function createPath({ creationId }: { creationId: string }) {
+  return `./src/c/${creationId}.tsx`;
+}
 export function RenderReact({
+  id,
   code: initialCode,
   render: initialRender,
 }: {
+  id: string;
   code: string;
   render: string;
 }) {
@@ -26,12 +66,42 @@ export function RenderReact({
     ],
     []
   );
-  const onCodeChange = useCallback((value: string) => {
-    setCode(value);
-  }, []);
-  const onRenderChange = useCallback((value: string) => {
-    setRender(value);
-  }, []);
+  const { webContainer } = useWebContainer();
+  const onCodeChange = useCallback(
+    (value: string) => {
+      setCode(value);
+      if (!webContainer) {
+        return;
+      }
+      const path = createPath({ creationId: id });
+      void webContainer.fs.writeFile(path, code, {
+        encoding: "utf-8",
+      });
+    },
+    [code, id, webContainer]
+  );
+  const onRenderChange = useCallback(
+    (value: string) => {
+      setRender(value);
+      if (!webContainer) {
+        return;
+      }
+      const path = createPath({ creationId: id });
+      void webContainer.fs.writeFile(path, render, {
+        encoding: "utf-8",
+      });
+    },
+    [render, id, webContainer]
+  );
+  useEffect(() => {
+    if (!webContainer) {
+      return;
+    }
+    const path = createPath({ creationId: id });
+    void webContainer.fs.writeFile(path, initialCode, {
+      encoding: "utf-8",
+    });
+  }, [initialCode, webContainer, id]);
   return (
     <div className="flex flex-col gap-1.5">
       <div className="grow min-w-0 max-h-[200px] overflow-auto rounded border border-stone-200/70">
@@ -58,6 +128,7 @@ export function RenderReact({
           }}
         />
       </div>
+      <RenderReactIframe id={id} code={code} render={render} />
     </div>
   );
 }

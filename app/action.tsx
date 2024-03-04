@@ -406,13 +406,14 @@ ${databaseSchema}`,
   });
 
   completion.onFunctionCall("display_react", async ({ code, render }) => {
+    const id = crypto.randomUUID();
     reply.update(
       <>
         {lastAssistantContent && (
           <BotMessage>{lastAssistantContent}</BotMessage>
         )}
         <BotCard>
-          <RenderReact code={code} render={render} />
+          <RenderReact id={id} code={code} render={render} />
         </BotCard>
       </>
     );
