@@ -15,7 +15,7 @@ import {
   spinner,
 } from "@/components/llm-stocks";
 
-import { RenderReact, RunSQL } from "@/components/autobuild";
+import { Continue, RenderReact, RunSQL } from "@/components/autobuild";
 import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
 import { StockSkeleton } from "@/components/llm-stocks/stock-skeleton";
 import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
@@ -149,17 +149,19 @@ async function confirmPurchase(symbol: string, price: number, amount: number) {
   };
 }
 
-async function submitUserMessage(content: string) {
+async function submitUserMessage(content?: string) {
   "use server";
 
   const aiState = getMutableAIState<typeof AI>();
-  aiState.update([
-    ...aiState.get(),
-    {
-      role: "user",
-      content,
-    },
-  ]);
+  if (content) {
+    aiState.update([
+      ...aiState.get(),
+      {
+        role: "user",
+        content,
+      },
+    ]);
+  }
 
   const reply = createStreamableUI(
     <BotMessage className="items-center">{spinner}</BotMessage>
@@ -330,7 +332,8 @@ ${databaseSchema}`,
   let lastAssistantContent = "";
 
   completion.onTextContent((content: string, isFinal: boolean) => {
-    lastAssistantContent = content.split(`{"function_call"`)[0];
+    // lastAssistantContent = content.split(`{"function_call"`)[0];
+    lastAssistantContent = content;
     reply.update(<BotMessage>{lastAssistantContent}</BotMessage>);
     if (isFinal) {
       reply.done();
@@ -444,6 +447,7 @@ export default async function handler(req: Request): Promise<Response> {
             endpointUrl={endpoint.url}
           />
         </BotCard>
+        <Continue />
       </>
     );
 

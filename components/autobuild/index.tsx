@@ -27,3 +27,10 @@ export const RenderReact = dynamic(
     ssr: false,
   }
 );
+
+export const Continue = dynamic(
+  () => import("./continue").then((mod) => mod.Continue),
+  {
+    ssr: false,
+  }
+);

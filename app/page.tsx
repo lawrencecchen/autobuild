@@ -2,25 +2,24 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import { useUIState, useActions, useAIState } from "ai/rsc";
 import { UserMessage } from "@/components/llm-stocks/message";
+import { useAIState, useActions, useUIState } from "ai/rsc";
 
-import { type AI } from "./action";
 import { ChatScrollAnchor } from "@/lib/hooks/chat-scroll-anchor";
+import { type AI } from "./action";
 // import { FooterText } from '@/components/footer';
-import Textarea from "react-textarea-autosize";
-import { useEnterSubmit } from "@/lib/hooks/use-enter-submit";
+import { ChatList } from "@/components/chat-list";
+import { EmptyScreen } from "@/components/empty-screen";
+import { Button } from "@/components/ui/button";
+import { IconArrowElbow, IconPlus } from "@/components/ui/icons";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { IconArrowElbow, IconPlus } from "@/components/ui/icons";
-import { Button } from "@/components/ui/button";
-import { ChatList } from "@/components/chat-list";
-import { EmptyScreen } from "@/components/empty-screen";
-import { toast } from "@/components/ui/use-toast";
+import { useEnterSubmit } from "@/lib/hooks/use-enter-submit";
 import { useWebContainer } from "@/lib/hooks/useWebContainer";
+import Textarea from "react-textarea-autosize";
 
 export default function Page() {
   const [aiState] = useAIState<typeof AI>();
