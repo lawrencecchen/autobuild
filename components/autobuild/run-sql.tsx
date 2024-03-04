@@ -13,6 +13,7 @@ import { type AI } from "@/app/action";
 import { GridSelection } from "@glideapps/glide-data-grid";
 import { PlayIcon } from "@radix-ui/react-icons";
 import { Loader } from "lucide-react";
+import clsx from "clsx";
 
 export function RunSQL({
   sql: initialSql,
@@ -157,7 +158,11 @@ export function RunSQL({
         />
       </div>
       {rows && columns && (
-        <div className="flex min-h-[280px] flex-col">
+        <div
+          className={clsx("flex min-h-[280px] flex-col transition", {
+            "opacity-50": runQueryMutation.isPending,
+          })}
+        >
           <div className="flex grow overflow-hidden rounded border border-stone-200/70">
             <Table
               data={rows}
