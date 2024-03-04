@@ -21,9 +21,9 @@ if (typeof window !== "undefined") {
     window.webContainerPromise = webContainerPromise;
 
     void (async () => {
-      const template = await fetch("/templates/vite-tailwind-react.json").then(
-        (r) => r.json() as unknown as FileSystemTree
-      );
+      const template = await fetch(
+        "/templates/vite-react-tw-query-mui.json"
+      ).then((r) => r.json() as unknown as FileSystemTree);
       const webContainer = await webContainerPromise;
       window.webContainer = webContainer;
       webContainer.on("server-ready", (port, url) => {

@@ -15,6 +15,10 @@ const exampleMessages = [
     heading: "Which products are most popular?",
     message: "Which products are most popular?",
   },
+  {
+    heading: "Create counter app.",
+    message: "Create counter app.",
+  },
 ];
 
 export function EmptyScreen({

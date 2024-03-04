@@ -31,6 +31,8 @@ import { RenderReact, RunSQL, Table } from "@/components/autobuild";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
+  baseURL:
+    "https://gateway.ai.cloudflare.com/v1/0c1675e0def6de1ab3a50a4e17dc5656/autobuild/openai",
 });
 
 async function getDatabaseSchema({

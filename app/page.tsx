@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ChatList } from "@/components/chat-list";
 import { EmptyScreen } from "@/components/empty-screen";
 import { toast } from "@/components/ui/use-toast";
+import { useWebContainer } from "@/lib/hooks/useWebContainer";
 
 export default function Page() {
   const [aiState] = useAIState<typeof AI>();
@@ -28,6 +29,9 @@ export default function Page() {
   const [inputValue, setInputValue] = useState("");
   const { formRef, onKeyDown } = useEnterSubmit();
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // warm up the web container
+  useWebContainer();
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

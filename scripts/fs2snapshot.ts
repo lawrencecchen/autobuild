@@ -68,7 +68,7 @@ async function readDir(dir: string): Promise<string[]> {
 async function main(inputPath: string) {
   const out = await dirToFileSystemTree(inputPath);
   await fs.writeFile(
-    `${inputPath.replace("templates/", "lib/templates/")}.json`,
+    `${inputPath.replace("templates/", "public/templates/")}.json`,
     JSON.stringify(out)
     // JSON.stringify(out, null, 2),
   );
