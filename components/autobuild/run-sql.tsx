@@ -12,6 +12,7 @@ import { useAIState } from "ai/rsc";
 import { type AI } from "@/app/action";
 import { GridSelection } from "@glideapps/glide-data-grid";
 import { PlayIcon } from "@radix-ui/react-icons";
+import { Loader } from "lucide-react";
 
 export function RunSQL({
   sql: initialSql,
@@ -115,15 +116,18 @@ export function RunSQL({
           <Button
             size="sm"
             variant="default"
-            className="text-sm"
+            className="text-sm gap-2"
             disabled={runQueryMutation.isPending}
             onClick={() => {
               runQueryMutation.mutate({ sql, params: JSON.parse(params) });
             }}
           >
-            <PlayIcon className="mr-2" />
+            {runQueryMutation.isPending ? (
+              <Loader className="w-4 h-4 animate-spin" />
+            ) : (
+              <PlayIcon className="w-4 h-4" />
+            )}
             Run
-            {runQueryMutation.isPending && spinner}
           </Button>
         </div>
       </div>
