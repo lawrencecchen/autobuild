@@ -116,10 +116,14 @@ export function RenderReact({
       return;
     }
     const path = createPath({ creationId: id });
-    void webContainer.fs.writeFile(path, initialCode, {
-      encoding: "utf-8",
-    });
-  }, [initialCode, webContainer, id]);
+    void webContainer.fs.writeFile(
+      path,
+      codeToRender({ code: initialCode, render: initialRender }),
+      {
+        encoding: "utf-8",
+      }
+    );
+  }, [initialCode, webContainer, id, initialRender]);
   return (
     <div className="flex flex-col gap-1.5">
       <div className="grow min-w-0 max-h-[200px] overflow-auto rounded border border-stone-200/70">
@@ -146,7 +150,7 @@ export function RenderReact({
           }}
         />
       </div>
-      <div className="border rounded">
+      <div className="border rounded min-h-[150px] overflow-hidden">
         <RenderReactIframe id={id} />
       </div>
     </div>
