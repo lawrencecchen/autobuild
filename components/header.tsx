@@ -9,10 +9,6 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between w-full px-4 border-b h-14 shrink-0 bg-background backdrop-blur-xl">
       <span className="inline-flex items-center home-links whitespace-nowrap">
-        {/* <a href="https://vercel.com" rel="noopener" target="_blank">
-          <IconVercel className="w-5 h-5 sm:h-6 sm:w-6" />
-        </a> */}
-        {/* haha */}
         <Image
           src={AutobuildLogo}
           width={22}
