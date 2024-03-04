@@ -22,7 +22,7 @@ export async function Header() {
         />
         <IconSeparator className="w-6 h-6 text-muted-foreground/20" />
         <Link href="/">
-          <span className="text-lg font-bold">
+          <span className="text-lg font-semibold">
             {/* <IconSparkles className="inline mr-0 w-4 sm:w-5 mb-0.5" /> */}
             Autobuild
           </span>
