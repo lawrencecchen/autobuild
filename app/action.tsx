@@ -394,7 +394,7 @@ ${databaseSchema}`,
     const formattedResult = result
       ? result.errors.length > 0
         ? "Errors:\n" + result.errors.map((x) => JSON.stringify(x)).join("\n\n")
-        : "First 5 rows:\n" + toCSV(result.result[0].results.slice(0, 5))
+        : "First 5 rows:\n" + toCSV(result.result?.[0]?.results?.slice(0, 5))
       : "Waiting for user to execute query.";
 
     aiState.done([
