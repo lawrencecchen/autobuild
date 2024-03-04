@@ -35,6 +35,16 @@ const openai = new OpenAI({
     "https://gateway.ai.cloudflare.com/v1/0c1675e0def6de1ab3a50a4e17dc5656/autobuild/openai",
 });
 
+function toCSV(json: any) {
+  const keys = Object.keys(json[0]);
+  let csv = keys.map((key) => key).join(",");
+  json.forEach((row: any) => {
+    const values = keys.map((key) => row[key]);
+    csv += "\n" + values.join(",");
+  });
+  return csv;
+}
+
 async function getDatabaseSchema({
   databaseIdentifier,
   cloudflareApiToken,
@@ -381,22 +391,13 @@ ${databaseSchema}`,
       </>
     );
 
-    function toCSV(json: any) {
-      const keys = Object.keys(json[0]);
-      let csv = keys.map((key) => key).join(",");
-      json.forEach((row: any) => {
-        const values = keys.map((key) => row[key]);
-        csv += "\n" + values.join(",");
-      });
-      return csv;
-    }
-
     const formattedResult = result
       ? result.errors.length > 0
         ? "Errors:\n" + result.errors.map((x) => JSON.stringify(x)).join("\n\n")
         : "First 5 rows:\n" + toCSV(result.result?.[0]?.results?.slice(0, 5))
       : "Waiting for user to execute query.";
 
+    reply.done();
     aiState.done([
       ...aiState.get(),
       {
@@ -420,6 +421,7 @@ ${databaseSchema}`,
       </>
     );
 
+    reply.done();
     aiState.done([
       ...aiState.get(),
       {
