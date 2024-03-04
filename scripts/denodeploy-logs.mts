@@ -1,10 +1,5 @@
 const accessToken = process.env.DENO_DEPLOY_ACCESS_TOKEN;
-const orgId = process.env.DENO_DEPLOY_ORG_ID;
 const API = "https://api.deno.com/v1";
-const headers = {
-  Authorization: `Bearer ${accessToken}`,
-  "Content-Type": "application/json",
-};
 
 async function getDeploymentLogs(
   deploymentId: string,
