@@ -189,6 +189,7 @@ The database is a SQLite database. Use ? to specify parameters in the SQL query,
 You can also display a React component using the \`display_react\` function.
 You may import \`@mui/material\` (v5.X.X) and use the components. Use Tailwind CSS for custom styling.
 You may import \`useQuery\` from @tanstack/react-query (v4.X.X) and retrieve \`show_query\` results. Use the object syntax to pass the query key, query function, and other parameters.
+You may import \`react-plotly.js\` (v2.X.X) and use the components to display plots.
 Use ESNext syntax and write TypeScript.
 
 Database schema:
@@ -458,12 +459,27 @@ export default async function handler(req: Request): Promise<Response> {
       {
         role: "function",
         name: "show_query",
-        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}, queryKey = ${queryKey}, endpointUrl = ${endpoint.url}]`,
+        // content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}, queryKey = ${queryKey}, endpointUrl = ${endpoint.url}]`,
+        content: JSON.stringify({
+          sql,
+          params,
+          result: formattedResult,
+          queryKey,
+          endpointUrl: endpoint.url,
+        }),
       },
     ]);
   });
 
   completion.onFunctionCall("display_react", async ({ code, render }) => {
+    function preprocessReactCode(code: string) {
+      // remove all default exports
+      return code
+        .split("\n")
+        .filter((line) => !line.includes("export default"))
+        .join("\n");
+    }
+    code = preprocessReactCode(code);
     const id = crypto.randomUUID();
     reply.update(
       <>

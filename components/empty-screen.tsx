@@ -7,8 +7,10 @@ const exampleMessages = [
     message: "Show all customers.",
   },
   {
-    heading: "Who are my best employees?",
-    message: "Who are my best employees?",
+    heading:
+      "Rank employees by number of orders processed and plot the results.",
+    message:
+      "Rank employees by number of orders processed and plot the results.",
   },
   {
     heading: "Which products are most popular?",
@@ -31,7 +33,7 @@ export function EmptyScreen({
         {/* <h1 className="mb-2 text-lg font-semibold">
           The fastest way to build React apps based on your database
         </h1> */}
-        <h1 className="mb-2 text-lg font-semibold">
+        <h1 className="mb-2 text-2xl font-semibold">
           The fastest way to build software
         </h1>
         <p className="mb-2 leading-normal text-muted-foreground">
