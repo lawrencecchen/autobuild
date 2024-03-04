@@ -7,11 +7,14 @@ const exampleMessages = [
     message: "Show all customers.",
   },
   {
-    heading:
-      "Rank employees by number of orders processed and plot the results.",
-    message:
-      "Rank employees by number of orders processed and plot the results.",
+    heading: "Rank employees by number of orders processed.",
+    message: "Rank employees by number of orders processed.",
   },
+  //   heading:
+  //     "Rank employees by number of orders processed and plot the results.",
+  //   message:
+  //     "Rank employees by number of orders processed and plot the results.",
+  // },
   {
     heading: "Which products are most popular?",
     message: "Which products are most popular?",
