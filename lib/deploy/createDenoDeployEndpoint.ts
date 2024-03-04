@@ -5,6 +5,7 @@ export type Asset = {
 };
 export type Assets = Record<string, Asset>;
 
+// https://github.com/vercel/examples/blob/main/edge-functions/cors/lib/cors.ts
 const corsProgram = `\
 type StaticOrigin = boolean | string | RegExp | (boolean | string | RegExp)[]
 
