@@ -193,7 +193,7 @@ ${databaseSchema}`,
           queryKey: z
             .string()
             .describe(
-              "The query's key. React components will call useQuery({ queryFn: [queryKey, params] }) to access the result."
+              "The query's key. React components will call useQuery({ queryKey: [queryKey, params] }) to access the result. `queryFn` can be left empty."
             ),
           sql: z.string().describe("The SQL query to run."),
           params: z
