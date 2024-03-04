@@ -161,7 +161,9 @@ async function submitUserMessage(content: string) {
       {
         role: "system",
         content: `\
-You are a database assistant. You can help users run SQL queries on the database.
+You are a Autobuild, a copilot that helps build internal tools. automate business processes, and discover business insights.
+Autonomously use tools to fulfill user requests.
+You can help users run SQL queries on the database.
 You can run a read-only SQL query on the database using the \`run_sql\` function.
 Use SQL parameters to prevent SQL injection attacks.
 The database is a SQLite database. Use ? to specify parameters in the SQL query, and pass the parameters as an array to the \`run_sql\` function.
@@ -181,11 +183,26 @@ ${databaseSchema}`,
         name: "run_sql",
         description: "Run a read-only SQL query on the database.",
         parameters: z.object({
+          queryKey: z
+            .string()
+            .describe(
+              "The query's key. React components will call useQuery({ queryFn: [queryKey, params] }) to access the result."
+            ),
           sql: z.string().describe("The SQL query to run."),
           params: z
             .array(z.string())
             .optional()
             .describe("The parameters to use in the query."),
+        }),
+      },
+      {
+        name: "display_react",
+        description: `Display a React component.`,
+        parameters: z.object({
+          code: z
+            .string()
+            .describe("The code of the React component. Do not render it."),
+          render: z.string().describe("Render the components with props."),
         }),
       },
     ],
@@ -287,6 +304,7 @@ ${databaseSchema}`,
   let lastAssistantContent = "";
 
   completion.onTextContent((content: string, isFinal: boolean) => {
+    console.log("content", content);
     lastAssistantContent = content.split(`{"function_call"`)[0];
     reply.update(<BotMessage>{lastAssistantContent}</BotMessage>);
     if (isFinal) {
@@ -298,6 +316,9 @@ ${databaseSchema}`,
   completion.onFunctionCall("run_sql", async ({ sql, params }) => {
     const isQuerySafe = getIsQuerySafe(sql);
     sql = format(sql, { language: "sqlite" });
+    if (!params) {
+      params = [];
+    }
     async function runQuery({
       sql,
       params,
@@ -371,9 +392,27 @@ ${databaseSchema}`,
       {
         role: "function",
         name: "show_run_sql",
-        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}]`,
+        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}, queryKey=]`,
       },
     ]);
+  });
+
+  completion.onFunctionCall("display_react", async ({ code, render }) => {
+    console.log("display_react", code, render);
+    reply.update(
+      <>
+        {lastAssistantContent && (
+          <BotMessage>{lastAssistantContent}</BotMessage>
+        )}
+        <BotCard>
+          <div>react code</div>
+          <div>{code}</div>
+          <div>render</div>
+          <div>{render}</div>
+        </BotCard>
+      </>
+    );
+    // aiState.
   });
 
   completion.onFunctionCall("list_stocks", async ({ stocks }) => {

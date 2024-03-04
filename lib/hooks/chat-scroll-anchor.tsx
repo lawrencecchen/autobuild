@@ -16,13 +16,13 @@ export function ChatScrollAnchor({ trackVisibility }: ChatScrollAnchorProps) {
     rootMargin: "0px 0px -50px 0px",
   });
 
-  // React.useEffect(() => {
-  //   if (isAtBottom && trackVisibility && !inView) {
-  //     entry?.target.scrollIntoView({
-  //       block: 'start',
-  //     });
-  //   }
-  // }, [inView, entry, isAtBottom, trackVisibility]);
+  React.useEffect(() => {
+    if (isAtBottom && trackVisibility && !inView) {
+      entry?.target.scrollIntoView({
+        block: "start",
+      });
+    }
+  }, [inView, entry, isAtBottom, trackVisibility]);
 
   return <div ref={ref} className="h-px w-full" />;
 }

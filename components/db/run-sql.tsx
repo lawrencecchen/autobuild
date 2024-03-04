@@ -30,7 +30,6 @@ export function RunSQL({
   const runQueryMutation = useMutation({
     mutationFn: runQuery,
     onSuccess(newData) {
-      console.log("setting data", newData);
       setData(newData);
     },
   });

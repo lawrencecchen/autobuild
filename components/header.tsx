@@ -18,7 +18,7 @@ export async function Header() {
           width={22}
           height={22}
           alt="Autobuild Logo"
-          className="mr-1.5"
+          className="mr-1.5 rounded"
         />
         <IconSeparator className="w-6 h-6 text-muted-foreground/20" />
         <Link href="/">
