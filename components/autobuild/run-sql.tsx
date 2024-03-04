@@ -20,6 +20,7 @@ export function RunSQL({
   params: initialParams,
   runQuery,
   initialData,
+  isInitialDataLoading,
   endpointUrl,
   queryKey,
 }: {
@@ -27,6 +28,7 @@ export function RunSQL({
   params?: Array<string>;
   runQuery: RunQueryFunction;
   initialData?: any;
+  isInitialDataLoading: boolean;
   endpointUrl?: string;
   queryKey: string;
 }) {
@@ -94,7 +96,7 @@ export function RunSQL({
     [aiState, id, rows, setAIState]
   );
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1">
       <div className="flex justify-between gap-2">
         <div className="flex items-center">
           <div className="text-sm font-mono">{queryKey}</div>
@@ -157,6 +159,12 @@ export function RunSQL({
           }}
         />
       </div>
+      {isInitialDataLoading && (
+        <div className="">
+          <div className="text-xs">Loading data...</div>
+          <Loader className="w-4 h-4 animate-spin" />
+        </div>
+      )}
       {rows && columns && (
         <div
           className={clsx("flex min-h-[280px] flex-col transition", {

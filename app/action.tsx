@@ -371,6 +371,7 @@ ${databaseSchema}`,
             params={params}
             runQuery={runQuery}
             queryKey={queryKey}
+            isInitialDataLoading={true}
           />
         </BotCard>
       </>
@@ -398,7 +399,11 @@ export default async function handler(req: Request): Promise<Response> {
     sql: \`${escapeBackticks(sql)}\`,
     params: ${JSON.stringify(params)},
   });
-  return Response.json(result);
+  const errors = result.errors.map((x) => JSON.stringify(x)).join("\\n\\n");
+  if (errors) {
+    return Response.json({ errors });
+  }
+  return Response.json(result?.result?.[0]?.results);
   // return Response.json({ ok: true })
 }`,
         },
@@ -429,6 +434,7 @@ export default async function handler(req: Request): Promise<Response> {
             params={params}
             runQuery={runQuery}
             initialData={result}
+            isInitialDataLoading={false}
             queryKey={queryKey}
             endpointUrl={endpoint?.url}
           />
