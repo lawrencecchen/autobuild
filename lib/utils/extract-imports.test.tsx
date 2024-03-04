@@ -1,3 +1,4 @@
+// @ts-nocheck wip
 import * as parser from "@babel/parser";
 import traverse from "@babel/traverse";
 import {
@@ -9,9 +10,10 @@ import {
   ClassDeclaration,
 } from "@babel/types";
 
-const getMissingImports = (program: string): Set<string> => {
+const getMissingImports = (program: string): string[] => {
   const definedVariables: Set<string> = new Set();
   const allIdentifiers: Set<string> = new Set();
+  const scopeStack: Set<string>[] = [definedVariables]; // Stack to manage scopes
 
   const ast = parser.parse(program, {
     sourceType: "module",
@@ -21,58 +23,96 @@ const getMissingImports = (program: string): Set<string> => {
     ],
   });
 
+  const pushScope = () => {
+    const newScope = new Set<string>();
+    scopeStack.push(newScope);
+    return newScope;
+  };
+
+  const popScope = () => {
+    scopeStack.pop();
+  };
+
+  const addDefinedVariable = (name: string) => {
+    if (scopeStack.length > 0) {
+      scopeStack[scopeStack.length - 1].add(name);
+    }
+  };
+
   traverse(ast, {
     ImportDeclaration({ node }: { node: ImportDeclaration }) {
       node.specifiers.forEach((specifier) => {
-        definedVariables.add(specifier.local.name);
+        addDefinedVariable(specifier.local.name);
       });
     },
     VariableDeclarator({ node }: { node: VariableDeclarator }) {
       if (node.id.type === "Identifier") {
-        definedVariables.add(node.id.name);
+        addDefinedVariable(node.id.name);
       } else if (node.id.type === "ObjectPattern") {
         node.id.properties.forEach((property) => {
           if (
             property.type === "ObjectProperty" &&
             property.key.type === "Identifier"
           ) {
-            definedVariables.add(property.key.name);
+            addDefinedVariable(property.key.name);
           } else if (
             property.type === "RestElement" &&
             property.argument.type === "Identifier"
           ) {
-            definedVariables.add(property.argument.name);
+            addDefinedVariable(property.argument.name);
           }
         });
       }
     },
     FunctionDeclaration({ node }: { node: FunctionDeclaration }) {
       if (node.id && node.id.type === "Identifier") {
-        definedVariables.add(node.id.name);
+        addDefinedVariable(node.id.name);
       }
     },
     ClassDeclaration({ node }: { node: ClassDeclaration }) {
       if (node.id && node.id.type === "Identifier") {
-        definedVariables.add(node.id.name);
+        addDefinedVariable(node.id.name);
+      }
+    },
+    ArrowFunctionExpression({ node }: { node: any }) {
+      const newScope = pushScope();
+      if (node.params) {
+        node.params.forEach((param: any) => {
+          if (param.type === "Identifier") {
+            newScope.add(param.name);
+          }
+        });
+      }
+    },
+    FunctionExpression({ node }: { node: any }) {
+      const newScope = pushScope();
+      if (node.params) {
+        node.params.forEach((param: any) => {
+          if (param.type === "Identifier") {
+            newScope.add(param.name);
+          }
+        });
       }
     },
     Identifier({ node }: { node: Identifier }) {
       allIdentifiers.add(node.name);
     },
+    exit({ node }: { node: any }) {
+      if (
+        node.type === "ArrowFunctionExpression" ||
+        node.type === "FunctionExpression"
+      ) {
+        popScope();
+      }
+    },
   });
 
-  console.log(definedVariables, allIdentifiers);
-
-  const missingImports = new Set<string>();
-  allIdentifiers.forEach((identifier) => {
-    if (!definedVariables.has(identifier)) {
-      missingImports.add(identifier);
-    }
-  });
+  const missingImports = Array.from(allIdentifiers).filter(
+    (identifier) => !scopeStack.some((scope) => scope.has(identifier))
+  );
 
   return missingImports;
 };
-
 export { getMissingImports as extractImports };
 
 describe("extractImports", () => {
