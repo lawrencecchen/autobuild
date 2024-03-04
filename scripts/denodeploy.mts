@@ -45,7 +45,7 @@ import { queryDatabase } from "./db.ts";
 export default async function handler(req: Request): Promise<Response> {
   const result = await queryDatabase({
     databaseIdentifier: "61495fe1-331e-41e4-b235-f7672ca1b5c5",
-    cloudflareApiToken: Deno.env.get("CLOUDFLARE_API_TOKEN"),
+    bearerToken: Deno.env.get("CLOUDFLARE_API_TOKEN"),
     accountIdentifier: Deno.env.get("CLOUDFLARE_ACCOUNT_ID"),
     sql: "SELECT * FROM Customer",
     params: [],
