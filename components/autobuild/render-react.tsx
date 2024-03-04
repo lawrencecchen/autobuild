@@ -1,41 +1,51 @@
-import { EditorView } from "@codemirror/view";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { javascript } from "@codemirror/lang-javascript";
-import ReactCodeMirror from "@uiw/react-codemirror";
 import { useWebContainer } from "@/lib/hooks/useWebContainer";
-import { WebContainer } from "@webcontainer/api";
+import { javascript } from "@codemirror/lang-javascript";
+import { EditorView } from "@codemirror/view";
+import ReactCodeMirror from "@uiw/react-codemirror";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function convertToWebContainerUrl(
   creationId: string,
   webContainerUrl: string
 ): string {
-  return `${webContainerUrl}/?component=${creationId}`;
+  return `${webContainerUrl}/?c=${creationId}`;
 }
 
-function RenderReactIframe({
-  id,
-  code,
-  render,
-}: {
-  id: string;
-  code: string;
-  render: string;
-}) {
-  const sandbox = useWebContainer();
-  const mainIframePreviewUrl = sandbox.url;
+function codeToRender({ code, render }: { code: string; render: string }) {
+  return `\
+${code}
+
+export default function Preview() {
+  return (
+    <>
+      ${render}
+    </>
+  );
+}`;
+}
+
+function RenderReactIframe({ id }: { id: string }) {
+  const { url: webContainerUrl } = useWebContainer();
+  function getIframePreviewUrl() {
+    if (webContainerUrl) {
+      return convertToWebContainerUrl(id, webContainerUrl);
+    }
+    if (webContainerUrl) {
+      return webContainerUrl;
+    }
+    return null;
+  }
+  const mainIframePreviewUrl = getIframePreviewUrl();
   const mainIframePreviewRef = useRef<HTMLIFrameElement>(null);
   if (!mainIframePreviewUrl) {
     return null;
   }
   return (
-    <iframe src={mainIframePreviewUrl} ref={mainIframePreviewRef}></iframe>
+    <iframe
+      className="w-full h-full"
+      src={mainIframePreviewUrl}
+      ref={mainIframePreviewRef}
+    ></iframe>
   );
 }
 function createPath({ creationId }: { creationId: string }) {
@@ -68,30 +78,38 @@ export function RenderReact({
   );
   const { webContainer } = useWebContainer();
   const onCodeChange = useCallback(
-    (value: string) => {
-      setCode(value);
+    (newCode: string) => {
+      setCode(newCode);
       if (!webContainer) {
         return;
       }
       const path = createPath({ creationId: id });
-      void webContainer.fs.writeFile(path, code, {
-        encoding: "utf-8",
-      });
+      void webContainer.fs.writeFile(
+        path,
+        codeToRender({ code: newCode, render }),
+        {
+          encoding: "utf-8",
+        }
+      );
     },
-    [code, id, webContainer]
+    [id, render, webContainer]
   );
   const onRenderChange = useCallback(
-    (value: string) => {
-      setRender(value);
+    (newRender: string) => {
+      setRender(newRender);
       if (!webContainer) {
         return;
       }
       const path = createPath({ creationId: id });
-      void webContainer.fs.writeFile(path, render, {
-        encoding: "utf-8",
-      });
+      void webContainer.fs.writeFile(
+        path,
+        codeToRender({ code, render: newRender }),
+        {
+          encoding: "utf-8",
+        }
+      );
     },
-    [render, id, webContainer]
+    [webContainer, id, code]
   );
   useEffect(() => {
     if (!webContainer) {
@@ -128,7 +146,9 @@ export function RenderReact({
           }}
         />
       </div>
-      <RenderReactIframe id={id} code={code} render={render} />
+      <div className="border rounded">
+        <RenderReactIframe id={id} />
+      </div>
     </div>
   );
 }
