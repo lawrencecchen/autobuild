@@ -154,7 +154,8 @@ async function submitUserMessage(content: string) {
   });
 
   const completion = runOpenAICompletion(openai, {
-    model: "gpt-3.5-turbo",
+    // model: "gpt-3.5-turbo",
+    model: "gpt-4-0125-preview",
     stream: true,
     temperature: 0,
     messages: [
@@ -167,6 +168,9 @@ You can help users run SQL queries on the database.
 You can run a read-only SQL query on the database using the \`run_sql\` function.
 Use SQL parameters to prevent SQL injection attacks.
 The database is a SQLite database. Use ? to specify parameters in the SQL query, and pass the parameters as an array to the \`run_sql\` function.
+You can also display a React component using the \`display_react\` function.
+All Material-UI (v5.X.X) components are imported and available for use.
+\`useQuery\` is imported from @tanstack/react-query (v4.X.X) and can be used to retrieve \`show_query\` results. Use the object syntax to pass the query key and parameters.
 
 Database schema:
 
@@ -201,7 +205,9 @@ ${databaseSchema}`,
         parameters: z.object({
           code: z
             .string()
-            .describe("The code of the React component. Do not render it."),
+            .describe(
+              "The code of the React component. Do not render it. Call `useQuery` to retrieve data to render."
+            ),
           render: z.string().describe("Render the components with props."),
         }),
       },
@@ -313,7 +319,7 @@ ${databaseSchema}`,
     }
   });
 
-  completion.onFunctionCall("run_sql", async ({ sql, params }) => {
+  completion.onFunctionCall("run_sql", async ({ queryKey, sql, params }) => {
     const isQuerySafe = getIsQuerySafe(sql);
     sql = format(sql, { language: "sqlite" });
     if (!params) {
@@ -342,6 +348,7 @@ ${databaseSchema}`,
           <BotMessage>{lastAssistantContent}</BotMessage>
         )}
         <BotCard>
+          <div>{queryKey}</div>
           <RunSQL sql={sql} params={params} runQuery={runQuery} />
         </BotCard>
       </>
@@ -361,6 +368,7 @@ ${databaseSchema}`,
           <BotMessage>{lastAssistantContent}</BotMessage>
         )}
         <BotCard>
+          <div>{queryKey}</div>
           <RunSQL
             sql={sql}
             params={params}
@@ -391,8 +399,8 @@ ${databaseSchema}`,
       ...aiState.get(),
       {
         role: "function",
-        name: "show_run_sql",
-        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}, queryKey=]`,
+        name: "show_query",
+        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}, queryKey = ${queryKey}]`,
       },
     ]);
   });

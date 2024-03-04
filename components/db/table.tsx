@@ -110,7 +110,7 @@ export function Table({
       }
       row[key] = newValue.data;
     },
-    [columns]
+    [columns, data]
   );
 
   const onColumnResize = useCallback(
