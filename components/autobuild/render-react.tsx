@@ -38,7 +38,7 @@ function RenderReactIframe({ id }: { id: string }) {
   const mainIframePreviewUrl = getIframePreviewUrl();
   const mainIframePreviewRef = useRef<HTMLIFrameElement>(null);
   if (!mainIframePreviewUrl) {
-    return null;
+    return <div>Spawning sandbox...</div>;
   }
   return (
     <iframe
