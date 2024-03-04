@@ -56,8 +56,6 @@ async function getDeploymentLogs(
     } else {
       // Parse JSON array for past logs
       const logs = await response.json();
-      console.log("gyat", logs);
-      console.log(logs);
       return logs;
     }
   } catch (error) {
