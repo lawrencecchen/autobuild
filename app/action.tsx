@@ -174,8 +174,8 @@ async function submitUserMessage(content?: string) {
   });
 
   const completion = runOpenAICompletion(openai, {
-    // model: "gpt-3.5-turbo",
-    model: "gpt-4-0125-preview",
+    model: "gpt-3.5-turbo-0125",
+    // model: "gpt-4-0125-preview",
     stream: true,
     temperature: 0,
     messages: [
