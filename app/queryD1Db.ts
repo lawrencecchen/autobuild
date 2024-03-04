@@ -15,8 +15,8 @@ export async function queryDatabase<T>({
   databaseIdentifier,
   sql,
   params,
-  accountIdentifier = process.env.CLOUDFLARE_ACCOUNT_ID,
-  bearerToken = process.env.CLOUDFLARE_API_TOKEN,
+  accountIdentifier,
+  bearerToken,
 }: {
   databaseIdentifier: string;
   sql: string;
