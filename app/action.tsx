@@ -27,7 +27,7 @@ import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
 import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
 import { queryDatabase } from "./queryD1Db";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
-import { RunSQL, Table } from "@/components/db";
+import { RenderReact, RunSQL, Table } from "@/components/db";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
@@ -171,6 +171,7 @@ The database is a SQLite database. Use ? to specify parameters in the SQL query,
 You can also display a React component using the \`display_react\` function.
 All Material-UI (v5.X.X) components are imported and available for use.
 \`useQuery\` is imported from @tanstack/react-query (v4.X.X) and can be used to retrieve \`show_query\` results. Use the object syntax to pass the query key and parameters.
+Use ESNext syntax and write TypeScript.
 
 Database schema:
 
@@ -348,7 +349,7 @@ ${databaseSchema}`,
           <BotMessage>{lastAssistantContent}</BotMessage>
         )}
         <BotCard>
-          <div>{queryKey}</div>
+          <div className="text-sm font-mono mb-0.5">{queryKey}</div>
           <RunSQL sql={sql} params={params} runQuery={runQuery} />
         </BotCard>
       </>
@@ -368,7 +369,7 @@ ${databaseSchema}`,
           <BotMessage>{lastAssistantContent}</BotMessage>
         )}
         <BotCard>
-          <div>{queryKey}</div>
+          <div className="text-sm font-mono mb-0.5">{queryKey}</div>
           <RunSQL
             sql={sql}
             params={params}
@@ -406,20 +407,25 @@ ${databaseSchema}`,
   });
 
   completion.onFunctionCall("display_react", async ({ code, render }) => {
-    console.log("display_react", code, render);
     reply.update(
       <>
         {lastAssistantContent && (
           <BotMessage>{lastAssistantContent}</BotMessage>
         )}
         <BotCard>
-          <div>react code</div>
-          <div>{code}</div>
-          <div>render</div>
-          <div>{render}</div>
+          <RenderReact code={code} render={render} />
         </BotCard>
       </>
     );
+
+    aiState.done([
+      ...aiState.get(),
+      {
+        role: "function",
+        name: "display_react",
+        content: JSON.stringify({ code, render }),
+      },
+    ]);
     // aiState.
   });
 
