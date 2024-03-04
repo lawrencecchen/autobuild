@@ -27,7 +27,7 @@ import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
 import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
 import { queryDatabase } from "./queryD1Db";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
-import { RenderReact, RunSQL, Table } from "@/components/db";
+import { RenderReact, RunSQL, Table } from "@/components/autobuild";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
