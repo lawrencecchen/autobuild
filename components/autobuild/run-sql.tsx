@@ -11,6 +11,7 @@ import { Table } from "./table";
 import { useAIState } from "ai/rsc";
 import { type AI } from "@/app/action";
 import { GridSelection } from "@glideapps/glide-data-grid";
+import { PlayIcon } from "@radix-ui/react-icons";
 
 export function RunSQL({
   sql: initialSql,
@@ -97,7 +98,7 @@ export function RunSQL({
           <div className="text-sm font-mono">{queryKey}</div>
         </div>
         <div className="flex items-center gap-2 justify-end">
-          {endpointUrl && (
+          {endpointUrl ? (
             <a
               href={endpointUrl}
               target="_blank"
@@ -105,16 +106,23 @@ export function RunSQL({
             >
               {endpointUrl}
             </a>
+          ) : (
+            <>
+              <div className="text-xs">Creating endpoint URL</div>
+              {spinner}
+            </>
           )}
           <Button
             size="sm"
-            variant="outline"
+            variant="default"
+            className="text-sm"
             disabled={runQueryMutation.isPending}
             onClick={() => {
               runQueryMutation.mutate({ sql, params: JSON.parse(params) });
             }}
           >
-            Run query
+            <PlayIcon className="mr-2" />
+            Run
             {runQueryMutation.isPending && spinner}
           </Button>
         </div>
@@ -144,17 +152,6 @@ export function RunSQL({
           }}
         />
       </div>
-      <Button
-        size="sm"
-        variant="outline"
-        disabled={runQueryMutation.isPending}
-        onClick={() => {
-          runQueryMutation.mutate({ sql, params: JSON.parse(params) });
-        }}
-      >
-        Run query
-        {runQueryMutation.isPending && spinner}
-      </Button>
       {rows && columns && (
         <div className="flex min-h-[280px] flex-col">
           <div className="flex grow overflow-hidden rounded border border-stone-200/70">
