@@ -42,7 +42,7 @@ function RenderReactIframe({ id }: { id: string }) {
   }
   return (
     <iframe
-      className="w-full h-full"
+      className="w-full h-full grow"
       src={mainIframePreviewUrl}
       ref={mainIframePreviewRef}
     ></iframe>
@@ -78,13 +78,13 @@ export function RenderReact({
   );
   const { webContainer } = useWebContainer();
   const onCodeChange = useCallback(
-    (newCode: string) => {
+    async (newCode: string) => {
       setCode(newCode);
       if (!webContainer) {
         return;
       }
       const path = createPath({ creationId: id });
-      void webContainer.fs.writeFile(
+      await webContainer.fs.writeFile(
         path,
         codeToRender({ code: newCode, render }),
         {
@@ -95,13 +95,13 @@ export function RenderReact({
     [id, render, webContainer]
   );
   const onRenderChange = useCallback(
-    (newRender: string) => {
+    async (newRender: string) => {
       setRender(newRender);
       if (!webContainer) {
         return;
       }
       const path = createPath({ creationId: id });
-      void webContainer.fs.writeFile(
+      await webContainer.fs.writeFile(
         path,
         codeToRender({ code, render: newRender }),
         {
@@ -150,7 +150,7 @@ export function RenderReact({
           }}
         />
       </div>
-      <div className="border rounded min-h-[150px] overflow-hidden">
+      <div className="border rounded min-h-[200px] overflow-hidden flex flex-col">
         <RenderReactIframe id={id} />
       </div>
     </div>
