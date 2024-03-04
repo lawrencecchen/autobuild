@@ -150,7 +150,7 @@ export function RenderReact({
           }}
         />
       </div>
-      <div className="border rounded min-h-[200px] overflow-hidden flex flex-col resize-y">
+      <div className="border rounded min-h-[300px] overflow-hidden flex flex-col resize-y">
         <RenderReactIframe id={id} />
       </div>
     </div>
