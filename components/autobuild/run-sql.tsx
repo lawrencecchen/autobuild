@@ -17,11 +17,15 @@ export function RunSQL({
   params: initialParams,
   runQuery,
   initialData,
+  endpointUrl,
+  queryKey,
 }: {
   sql: string;
   params?: Array<string>;
   runQuery: RunQueryFunction;
   initialData?: any;
+  endpointUrl?: string;
+  queryKey: string;
 }) {
   const [aiState, setAIState] = useAIState<typeof AI>();
   const [sql, setSql] = useState(initialSql);
@@ -88,6 +92,33 @@ export function RunSQL({
   );
   return (
     <div className="flex flex-col gap-1.5">
+      <div className="flex justify-between gap-2">
+        <div className="flex items-center">
+          <div className="text-sm font-mono">{queryKey}</div>
+        </div>
+        <div className="flex items-center gap-2 justify-end">
+          {endpointUrl && (
+            <a
+              href={endpointUrl}
+              target="_blank"
+              className="text-xs font-mono max-w-[220px] truncate"
+            >
+              {endpointUrl}
+            </a>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={runQueryMutation.isPending}
+            onClick={() => {
+              runQueryMutation.mutate({ sql, params: JSON.parse(params) });
+            }}
+          >
+            Run query
+            {runQueryMutation.isPending && spinner}
+          </Button>
+        </div>
+      </div>
       <div className="grow overflow-hidden min-w-0 rounded border border-stone-200/70">
         <ReactCodeMirror
           value={sql}

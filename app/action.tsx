@@ -28,6 +28,12 @@ import {
 import { z } from "zod";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
 import { queryDatabase } from "./queryD1Db";
+import { createDenoDeployEndpoint } from "@/lib/deploy/createDenoDeployEndpoint";
+import { queryDatabaseProgram } from "@/lib/deploy/programs";
+
+function escapeBackticks(s: string) {
+  return s.replace(/`/g, "\\`");
+}
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
@@ -360,11 +366,49 @@ ${databaseSchema}`,
           <BotMessage>{lastAssistantContent}</BotMessage>
         )}
         <BotCard>
-          <div className="text-sm font-mono mb-0.5">{queryKey}</div>
-          <RunSQL sql={sql} params={params} runQuery={runQuery} />
+          <RunSQL
+            sql={sql}
+            params={params}
+            runQuery={runQuery}
+            queryKey={queryKey}
+          />
         </BotCard>
       </>
     );
+    const endpoint = await createDenoDeployEndpoint({
+      assets: {
+        "db.ts": {
+          kind: "file",
+          encoding: "utf-8",
+          content: queryDatabaseProgram,
+        },
+        "handler.ts": {
+          kind: "file",
+          encoding: "utf-8",
+          // content: `Deno.serve(() => new Response("Hello, World!"));`,
+          content: `\
+import { queryDatabase } from "./db.ts";
+
+export default async function handler(req: Request): Promise<Response> {
+  const result = await queryDatabase({
+    databaseIdentifier: "61495fe1-331e-41e4-b235-f7672ca1b5c5",
+    bearerToken: Deno.env.get("CLOUDFLARE_API_TOKEN"),
+    accountIdentifier: Deno.env.get("CLOUDFLARE_ACCOUNT_ID"),
+    // sql: "SELECT * FROM Customer",
+    sql: \`${escapeBackticks(sql)}\`,
+    params: ${JSON.stringify(params)},
+  });
+  return Response.json(result);
+  // return Response.json({ ok: true })
+}`,
+        },
+      },
+      envVars: {
+        CLOUDFLARE_API_TOKEN: process.env.CLOUDFLARE_API_TOKEN!,
+        CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID!,
+      },
+    });
+
     const result = isQuerySafe
       ? await queryDatabase<any>({
           databaseIdentifier: "61495fe1-331e-41e4-b235-f7672ca1b5c5",
@@ -380,12 +424,13 @@ ${databaseSchema}`,
           <BotMessage>{lastAssistantContent}</BotMessage>
         )}
         <BotCard>
-          <div className="text-sm font-mono mb-0.5">{queryKey}</div>
           <RunSQL
             sql={sql}
             params={params}
             runQuery={runQuery}
             initialData={result}
+            queryKey={queryKey}
+            endpointUrl={endpoint?.url}
           />
         </BotCard>
       </>
