@@ -169,7 +169,7 @@ You can run a read-only SQL query on the database using the \`run_sql\` function
 Use SQL parameters to prevent SQL injection attacks.
 The database is a SQLite database. Use ? to specify parameters in the SQL query, and pass the parameters as an array to the \`run_sql\` function.
 You can also display a React component using the \`display_react\` function.
-You may import \`@mui/material\` (v5.X.X) and use the components.
+You may import \`@mui/material\` (v5.X.X) and use the components. Use Tailwind CSS for styling.
 You may import \`useQuery\` from @tanstack/react-query (v4.X.X) and retrieve \`show_query\` results. Use the object syntax to pass the query key and parameters.
 Use ESNext syntax and write TypeScript.
 
@@ -207,7 +207,7 @@ ${databaseSchema}`,
           code: z
             .string()
             .describe(
-              "The code of the React component. Do not render it. Call `useQuery` to retrieve data to render."
+              "The code of the React component. Do not render or export it. Call `useQuery` to retrieve data to render."
             ),
           render: z.string().describe("Render the components with props."),
         }),
