@@ -28,8 +28,11 @@ export function EmptyScreen({
   return (
     <div className="mx-auto max-w-4xl px-4">
       <div className="rounded-lg border bg-background p-8 mb-4">
-        <h1 className="mb-2 text-lg font-semibold">
+        {/* <h1 className="mb-2 text-lg font-semibold">
           The fastest way to build React apps based on your database
+        </h1> */}
+        <h1 className="mb-2 text-lg font-semibold">
+          The fastest way to build software
         </h1>
         <p className="mb-2 leading-normal text-muted-foreground">
           Autobuild can write SQL queries, make safe updates/inserts/deletes to

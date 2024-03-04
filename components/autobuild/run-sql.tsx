@@ -160,8 +160,8 @@ export function RunSQL({
         />
       </div>
       {isInitialDataLoading && (
-        <div className="">
-          <div className="text-xs">Loading data...</div>
+        <div className="flex items-center gap-2">
+          <div className="text-sm">Loading data...</div>
           <Loader className="w-4 h-4 animate-spin" />
         </div>
       )}
