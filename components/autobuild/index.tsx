@@ -7,8 +7,8 @@ export const RunSQL = dynamic(
   {
     ssr: false,
     // loading: () => (
-    //   <div className="bg-zinc-900 rounded-lg px-4 py-5 text-center text-xs">
-    //     {/* Loading... */}
+    //   <div className="px-4 py-5 text-center text-xs">
+    //     Loading data...
     //   </div>
     // ),
   }
@@ -16,11 +16,9 @@ export const RunSQL = dynamic(
 
 export const Table = dynamic(() => import("./table").then((mod) => mod.Table), {
   ssr: false,
-  // loading: () => (
-  //   <div className="bg-zinc-900 rounded-lg px-4 py-5 text-center text-xs">
-  //     {/* Loading... */}
-  //   </div>
-  // ),
+  loading: () => (
+    <div className="px-4 py-5 text-center text-xs">Loading data...</div>
+  ),
 });
 
 export const RenderReact = dynamic(
