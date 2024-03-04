@@ -20,6 +20,7 @@ export function RunSQL({
   params: initialParams,
   runQuery,
   initialData,
+  initialError,
   isInitialDataLoading,
   endpointUrl,
   queryKey,
@@ -28,6 +29,7 @@ export function RunSQL({
   params?: Array<string>;
   runQuery: RunQueryFunction;
   initialData?: any;
+  initialError?: string;
   isInitialDataLoading: boolean;
   endpointUrl?: string;
   queryKey: string;
@@ -42,7 +44,7 @@ export function RunSQL({
       setData(newData);
     },
   });
-  const rows = data?.result?.[0].results;
+  const rows = data?.result?.[0]?.results;
   const columns = Object.keys(rows?.[0] ?? {}).map((key) => ({
     title: key,
     id: key,
@@ -159,13 +161,7 @@ export function RunSQL({
           }}
         />
       </div>
-      {isInitialDataLoading && (
-        <div className="flex items-center gap-1.5">
-          <div className="text-sm">Loading data...</div>
-          <Loader className="w-4 h-4 animate-spin" />
-        </div>
-      )}
-      {rows && columns && (
+      {rows && columns ? (
         <div
           className={clsx("flex min-h-[280px] flex-col transition", {
             "opacity-50": runQueryMutation.isPending,
@@ -179,7 +175,14 @@ export function RunSQL({
             />
           </div>
         </div>
-      )}
+      ) : isInitialDataLoading ? (
+        <div className="flex items-center gap-1.5">
+          <div className="text-sm">Loading data...</div>
+          <Loader className="w-4 h-4 animate-spin" />
+        </div>
+      ) : initialError ? (
+        <div className="text-sm text-red-500">Error: {initialError}</div>
+      ) : null}
     </div>
   );
 }

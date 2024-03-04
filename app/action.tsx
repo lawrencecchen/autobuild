@@ -423,6 +423,9 @@ export default async function handler(req: Request): Promise<Response> {
           params,
         })
       : undefined;
+    const initialError = result?.errors
+      ? result.errors.map((x) => JSON.stringify(x)).join("\n\n")
+      : undefined;
     reply.update(
       <>
         {lastAssistantContent && (
@@ -435,6 +438,7 @@ export default async function handler(req: Request): Promise<Response> {
             runQuery={runQuery}
             initialData={result}
             isInitialDataLoading={false}
+            initialError={initialError}
             queryKey={queryKey}
             endpointUrl={endpoint.url}
           />
