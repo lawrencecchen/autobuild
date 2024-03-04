@@ -40,8 +40,10 @@ export function EmptyScreen({
           The fastest way to build software
         </h1>
         <p className="mb-2 leading-normal text-muted-foreground">
-          Autobuild can write SQL queries, make safe updates/inserts/deletes to
-          your database, and create React components to display the results.
+          Autobuild can write SQL queries and create React components to display
+          the results.
+          {/* Autobuild can write SQL queries, make safe updates/inserts/deletes to
+          your database, and create React components to display the results. */}
         </p>
         {/* <p className="mb-2 leading-normal text-muted-foreground">
           The demo is built with{" "}
