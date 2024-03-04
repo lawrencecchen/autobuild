@@ -57,5 +57,5 @@ async function getDeploymentLogs(
     console.error("Failed to fetch deployment logs:", error);
   }
 }
-const result = await getDeploymentLogs("fng02ykz13mh", "2022-01-01T00:00:00Z");
+const result = await getDeploymentLogs("ncbm6gpe1ym2", "2022-01-01T00:00:00Z");
 console.log(result);

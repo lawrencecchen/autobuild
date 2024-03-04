@@ -188,7 +188,7 @@ Use SQL parameters to prevent SQL injection attacks.
 The database is a SQLite database. Use ? to specify parameters in the SQL query, and pass the parameters as an array to the \`run_sql\` function.
 You can also display a React component using the \`display_react\` function.
 You may import \`@mui/material\` (v5.X.X) and use the components. Use Tailwind CSS for custom styling.
-You may import \`useQuery\` from @tanstack/react-query (v4.X.X) and retrieve \`show_query\` results. Use the object syntax to pass the query key and parameters.
+You may import \`useQuery\` from @tanstack/react-query (v4.X.X) and retrieve \`show_query\` results. Use the object syntax to pass the query key, query function, and other parameters.
 Use ESNext syntax and write TypeScript.
 
 Database schema:
@@ -225,7 +225,7 @@ ${databaseSchema}`,
           code: z
             .string()
             .describe(
-              `The code of the React component. Do not render or export it. Call \`useQuery\` to retrieve data to render. \`queryFn\` should reference a \`queryKey\` defined in the \`run_sql\` function.`
+              `The code of the React component. Do not render or export it. Call \`useQuery\` to retrieve data to render. The queryKey should reference a queryKey defined in \`show_query\`, and the queryFn should fetch from the corresponding endpointURL.`
             ),
           render: z.string().describe("Render the components with props."),
         }),
@@ -436,7 +436,7 @@ export default async function handler(req: Request): Promise<Response> {
             initialData={result}
             isInitialDataLoading={false}
             queryKey={queryKey}
-            endpointUrl={endpoint?.url}
+            endpointUrl={endpoint.url}
           />
         </BotCard>
       </>
@@ -454,7 +454,7 @@ export default async function handler(req: Request): Promise<Response> {
       {
         role: "function",
         name: "show_query",
-        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}, queryKey = ${queryKey}]`,
+        content: `[SQL = ${sql}, params = ${JSON.stringify(params)}, result = ${formattedResult}, queryKey = ${queryKey}, endpointUrl = ${endpoint.url}]`,
       },
     ]);
   });

@@ -101,7 +101,7 @@ export function RunSQL({
         <div className="flex items-center">
           <div className="text-sm font-mono">{queryKey}</div>
         </div>
-        <div className="flex items-center gap-2 justify-end">
+        <div className="flex items-center gap-1.5 justify-end">
           {endpointUrl ? (
             <a
               href={endpointUrl}
@@ -160,7 +160,7 @@ export function RunSQL({
         />
       </div>
       {isInitialDataLoading && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <div className="text-sm">Loading data...</div>
           <Loader className="w-4 h-4 animate-spin" />
         </div>
