@@ -29,6 +29,7 @@
     "@uiw/react-codemirror": "^4.21.24",
     "@vercel/analytics": "^1.2.2",
     "@vercel/kv": "^1.0.1",
+    "@webcontainer/api": "^1.1.9",
     "ai": "3.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
