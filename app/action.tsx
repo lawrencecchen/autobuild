@@ -311,7 +311,6 @@ ${databaseSchema}`,
   let lastAssistantContent = "";
 
   completion.onTextContent((content: string, isFinal: boolean) => {
-    console.log("content", content);
     lastAssistantContent = content.split(`{"function_call"`)[0];
     reply.update(<BotMessage>{lastAssistantContent}</BotMessage>);
     if (isFinal) {
