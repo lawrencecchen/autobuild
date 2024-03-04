@@ -169,8 +169,8 @@ You can run a read-only SQL query on the database using the \`run_sql\` function
 Use SQL parameters to prevent SQL injection attacks.
 The database is a SQLite database. Use ? to specify parameters in the SQL query, and pass the parameters as an array to the \`run_sql\` function.
 You can also display a React component using the \`display_react\` function.
-All Material-UI (v5.X.X) components are imported and available for use.
-\`useQuery\` is imported from @tanstack/react-query (v4.X.X) and can be used to retrieve \`show_query\` results. Use the object syntax to pass the query key and parameters.
+You may import \`@mui/material\` (v5.X.X) and use the components.
+You may import \`useQuery\` from @tanstack/react-query (v4.X.X) and retrieve \`show_query\` results. Use the object syntax to pass the query key and parameters.
 Use ESNext syntax and write TypeScript.
 
 Database schema:
