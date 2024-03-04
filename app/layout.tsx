@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   twitter: {
     ...meta,
     card: "summary_large_image",
-    site: "@vercel",
+    site: "@lawrencecchen",
   },
   openGraph: {
     ...meta,
