@@ -5,29 +5,29 @@ import OpenAI from "openai";
 import { format } from "sql-formatter";
 
 import {
-  spinner,
   BotCard,
   BotMessage,
-  SystemMessage,
-  Stock,
-  Purchase,
-  Stocks,
   Events,
+  Purchase,
+  Stock,
+  Stocks,
+  SystemMessage,
+  spinner,
 } from "@/components/llm-stocks";
 
+import { RenderReact, RunSQL } from "@/components/autobuild";
+import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
+import { StockSkeleton } from "@/components/llm-stocks/stock-skeleton";
+import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
 import {
-  runAsyncFnWithoutBlocking,
-  sleep,
   formatNumber,
+  runAsyncFnWithoutBlocking,
   runOpenAICompletion,
+  sleep,
 } from "@/lib/utils";
 import { z } from "zod";
-import { StockSkeleton } from "@/components/llm-stocks/stock-skeleton";
-import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
-import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
-import { queryDatabase } from "./queryD1Db";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
-import { RenderReact, RunSQL, Table } from "@/components/autobuild";
+import { queryDatabase } from "./queryD1Db";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
