@@ -74,34 +74,44 @@ export function RunSQL({
           // Identifier of this UI component, so we don't insert it many times.
           id,
         };
-        console.log("updating info", info);
         if (aiState[aiState.length - 1]?.id === id) {
           setAIState([...aiState.slice(0, -1), info]);
         } else {
           // If it doesn't exist, append it to the AI state.
           setAIState([...aiState, info]);
         }
+      } else {
+        // remove the info from the AI state
+        setAIState(aiState.filter((info) => info.id !== id));
       }
     },
     [aiState, id, rows, setAIState]
   );
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="grow overflow-hidden min-w-0 rounded">
+      <div className="grow overflow-hidden min-w-0 rounded border border-stone-200/70">
         <ReactCodeMirror
           value={sql}
           onChange={onSqlChange}
           extensions={extensions}
           // theme={oneDark}
           theme={"light"}
+          basicSetup={{
+            lineNumbers: false,
+            foldGutter: false,
+          }}
         />
       </div>
-      <div className="grow overflow-hidden min-w-0 rounded">
+      <div className="grow overflow-hidden min-w-0 rounded border border-stone-200/70">
         <ReactCodeMirror
           value={params}
           onChange={onParamsChange}
           // theme={oneDark}
           theme={"light"}
+          basicSetup={{
+            lineNumbers: false,
+            foldGutter: false,
+          }}
         />
       </div>
       <Button

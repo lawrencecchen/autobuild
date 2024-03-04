@@ -22,6 +22,7 @@ import { EmptyScreen } from "@/components/empty-screen";
 import { toast } from "@/components/ui/use-toast";
 
 export default function Page() {
+  const [aiState] = useAIState<typeof AI>();
   const [messages, setMessages] = useUIState<typeof AI>();
   const { submitUserMessage } = useActions();
   const [inputValue, setInputValue] = useState("");
@@ -54,7 +55,10 @@ export default function Page() {
 
   return (
     <div>
-      <div className="pb-[200px] pt-4 md:pt-10">
+      <div
+        className="pb-[200px] pt-4 md:pt-10"
+        onDoubleClick={() => console.log(aiState)}
+      >
         {messages.length ? (
           <>
             <ChatList messages={messages} />
