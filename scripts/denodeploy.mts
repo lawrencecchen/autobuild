@@ -30,11 +30,19 @@ const dr = await fetch(`${API}/projects/${project.id}/deployments`, {
     assets: {
       "main.ts": {
         kind: "file",
+        encoding: "utf-8",
+        content: `\
+import handler from "./handler.ts";
+Deno.serve(handler);`,
+      },
+      "handler.ts": {
+        kind: "file",
+        encoding: "utf-8",
         // content: `Deno.serve(() => new Response("Hello, World!"));`,
         content: `\
 import { queryDatabase } from "./db.ts";
 
-Deno.serve(async (req) => {
+export default async function handler(req: Request): Promise<Response> {
   const result = await queryDatabase({
     databaseIdentifier: "61495fe1-331e-41e4-b235-f7672ca1b5c5",
     cloudflareApiToken: Deno.env.get("CLOUDFLARE_API_TOKEN"),
@@ -43,14 +51,14 @@ Deno.serve(async (req) => {
     params: [],
   });
   return Response.json(result);
-})
+  // return Response.json({ ok: true })
+}
 `,
-        encoding: "utf-8",
       },
       "db.ts": {
         kind: "file",
-        content: queryDbProgram,
         encoding: "utf-8",
+        content: queryDbProgram,
       },
     },
     envVars: {
