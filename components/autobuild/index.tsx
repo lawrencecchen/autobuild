@@ -34,3 +34,10 @@ export const Continue = dynamic(
     ssr: false,
   }
 );
+
+export const RenderFunction = dynamic(
+  () => import("./render-function").then((mod) => mod.RenderFunction),
+  {
+    ssr: false,
+  }
+);

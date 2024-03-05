@@ -23,6 +23,10 @@ const exampleMessages = [
     heading: "Create counter app.",
     message: "Create counter app.",
   },
+  {
+    heading: "Create endpoint that returns hello world.",
+    message: "Create endpoint that returns hello world.",
+  },
 ];
 
 export function EmptyScreen({
