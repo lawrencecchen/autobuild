@@ -37,11 +37,13 @@ function Preview({ preview }: { preview: Preview }) {
   );
   if (preview.type === "json") {
     return (
-      <ReactCodeMirror
-        value={JSON.stringify(preview.data, null, 2)}
-        extensions={extensions}
-        theme={"light"}
-      />
+      <div className="grow overflow-hidden min-w-0 rounded border border-stone-200/70">
+        <ReactCodeMirror
+          value={JSON.stringify(preview.data, null, 2)}
+          extensions={extensions}
+          theme={"light"}
+        />
+      </div>
     );
   }
   return <div>Unknown preview type</div>;
