@@ -1,10 +1,11 @@
 "use server";
 import {
-  type Project,
   createDenoDeployDeployment,
+  streamDeploymentLogs,
+  type Project,
 } from "@/lib/deploy/createDenoDeployEndpoint";
 
-export async function createDeployment({
+export async function createAndWaitDeployment({
   code,
   project,
 }: {
@@ -23,7 +24,15 @@ export async function createDeployment({
     envVars: {},
     project,
   });
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  for await (const log of streamDeploymentLogs(newDeployment.deployment.id)) {
+    if (log.level === "info" && log.message.startsWith("Deployed to")) {
+      break;
+    }
+  }
   return newDeployment;
 }
 
-export type Deployment = Awaited<ReturnType<typeof createDeployment>>;
+export type CreateDeploymentResponse = Awaited<
+  ReturnType<typeof createAndWaitDeployment>
+>;

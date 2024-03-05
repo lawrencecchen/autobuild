@@ -1,6 +1,9 @@
 "use client";
 import { type AI } from "@/app/action";
-import { Deployment, createDeployment } from "@/app/createDeployment";
+import {
+  CreateDeploymentResponse,
+  createAndWaitDeployment,
+} from "@/app/createDeployment";
 import { type Project } from "@/lib/deploy/createDenoDeployEndpoint";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
@@ -61,7 +64,7 @@ export function RenderFunction({
   }) => Promise<void>;
   queryKey: string;
   project: Project;
-  initialDeployments: Deployment[];
+  initialDeployments: CreateDeploymentResponse[];
 }) {
   const [latestDeploymentCode, setLatestDeploymentCode] = useState(initialCode);
   const [deployments, setDeployments] = useState(initialDeployments);
@@ -79,9 +82,8 @@ export function RenderFunction({
       endpointUrl: string;
       shouldCreateNewDeployment: boolean;
     }) => {
-      console.log({ shouldCreateNewDeployment });
       if (shouldCreateNewDeployment) {
-        const newDeployment = await createDeployment({ code, project });
+        const newDeployment = await createAndWaitDeployment({ code, project });
         endpointUrl = newDeployment.url;
         setDeployments((current) => [...current, newDeployment]);
         setLatestDeploymentCode(code);

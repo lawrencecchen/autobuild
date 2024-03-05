@@ -1,12 +1,17 @@
 const accessToken = process.env.DENO_DEPLOY_ACCESS_TOKEN;
 const API = "https://api.deno.com/v1";
 
-async function getDeploymentLogs(
-  deploymentId: string,
-  since?: string,
-  until?: string,
-  realTime: boolean = false
-): Promise<any> {
+async function getDeploymentLogs({
+  deploymentId,
+  since,
+  until,
+  realTime = false,
+}: {
+  deploymentId: string;
+  since?: string;
+  until?: string;
+  realTime?: boolean;
+}): Promise<any> {
   let url = new URL(API + `/deployments/${deploymentId}/app_logs`);
 
   // Add query parameters for past logs
@@ -29,7 +34,6 @@ async function getDeploymentLogs(
       method: "GET",
       headers: headers,
     });
-    console.log(1);
 
     if (!response.ok) {
       throw new Error(`Error fetching logs: ${response.statusText}`);
@@ -57,5 +61,9 @@ async function getDeploymentLogs(
     console.error("Failed to fetch deployment logs:", error);
   }
 }
-const result = await getDeploymentLogs("ncbm6gpe1ym2", "2022-01-01T00:00:00Z");
+const result = await getDeploymentLogs({
+  deploymentId: "n87s9srbeewc",
+  // since: "2022-01-01T00:00:00Z",
+  realTime: true,
+});
 console.log(result);

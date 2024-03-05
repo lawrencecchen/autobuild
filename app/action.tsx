@@ -34,7 +34,7 @@ import {
 import { z } from "zod";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
 import { queryDatabase } from "./queryD1Db";
-import { createDeployment } from "./createDeployment";
+import { createAndWaitDeployment } from "./createDeployment";
 
 function escapeBackticks(s: string) {
   return s.replace(/`/g, "\\`");
@@ -531,15 +531,8 @@ export default async function handler(req: Request): Promise<Response> {
 
   completion.onFunctionCall("create_endpoint", async ({ queryKey, code }) => {
     const project = await createDenoDeployProject();
-    const deploymentPromise = createDenoDeployDeployment({
-      assets: {
-        "handler.ts": {
-          kind: "file",
-          encoding: "utf-8",
-          content: code,
-        },
-      },
-      envVars: {},
+    const deploymentPromise = createAndWaitDeployment({
+      code,
       project,
     });
 
