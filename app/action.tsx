@@ -20,7 +20,6 @@ import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
 import { StockSkeleton } from "@/components/llm-stocks/stock-skeleton";
 import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
 import {
-  Project,
   createDenoDeployDeployment,
   createProject as createDenoDeployProject,
 } from "@/lib/deploy/createDenoDeployEndpoint";
@@ -32,9 +31,9 @@ import {
   sleep,
 } from "@/lib/utils";
 import { z } from "zod";
+import { createAndWaitDeployment } from "./createDeployment";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
 import { queryDatabase } from "./queryD1Db";
-import { createAndWaitDeployment } from "./createDeployment";
 
 function escapeBackticks(s: string) {
   return s.replace(/`/g, "\\`");
@@ -537,11 +536,6 @@ export default async function handler(req: Request): Promise<Response> {
       project,
     });
 
-    async function save({ code }: { code: string }) {
-      "use server";
-      console.log("saving code", code);
-    }
-
     reply.update(
       <>
         {lastAssistantContent && (
@@ -552,7 +546,6 @@ export default async function handler(req: Request): Promise<Response> {
             code={code}
             queryKey={queryKey}
             project={project}
-            save={save}
             initialDeployments={[]}
           />
         </BotMessage>
@@ -568,7 +561,6 @@ export default async function handler(req: Request): Promise<Response> {
           <RenderFunction
             code={code}
             queryKey={queryKey}
-            save={save}
             project={project}
             initialDeployments={[deployment]}
           />

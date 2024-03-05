@@ -40,6 +40,7 @@ function Preview({ preview }: { preview: Preview }) {
           value={JSON.stringify(preview.data, null, 2)}
           extensions={extensions}
           theme={"light"}
+          readOnly
         />
       </div>
     );
