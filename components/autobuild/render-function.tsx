@@ -1,5 +1,7 @@
 "use client";
 import { type AI } from "@/app/action";
+import { Deployment, createDeployment } from "@/app/createDeployment";
+import { type Project } from "@/lib/deploy/createDenoDeployEndpoint";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import { PlayIcon } from "@radix-ui/react-icons";
@@ -44,22 +46,46 @@ function Preview({ preview }: { preview: Preview }) {
 
 export function RenderFunction({
   code: initialCode,
-  run,
   save,
-  endpointUrl,
   queryKey,
+  project,
+  initialDeployments,
 }: {
   code: string;
-  run: ({ code }: { code: string }) => Promise<void>;
-  save: ({ code }: { code: string }) => Promise<void>;
-  endpointUrl?: string;
+  save: ({
+    code,
+    project,
+  }: {
+    code: string;
+    project: Project;
+  }) => Promise<void>;
   queryKey: string;
+  project: Project;
+  initialDeployments: Deployment[];
 }) {
+  const [latestDeploymentCode, setLatestDeploymentCode] = useState(initialCode);
+  const [deployments, setDeployments] = useState(initialDeployments);
+  const latestDeployment = deployments[deployments.length - 1];
+  const endpointUrl = latestDeployment?.url;
   const [aiState, setAIState] = useAIState<typeof AI>();
   const [code, setCode] = useState(initialCode);
   const [preview, setPreview] = useState<Preview>();
+
   const runMutation = useMutation({
-    mutationFn: async ({ endpointUrl }: { endpointUrl: string }) => {
+    mutationFn: async ({
+      endpointUrl,
+      shouldCreateNewDeployment,
+    }: {
+      endpointUrl: string;
+      shouldCreateNewDeployment: boolean;
+    }) => {
+      console.log({ shouldCreateNewDeployment });
+      if (shouldCreateNewDeployment) {
+        const newDeployment = await createDeployment({ code, project });
+        endpointUrl = newDeployment.url;
+        setDeployments((current) => [...current, newDeployment]);
+        setLatestDeploymentCode(code);
+      }
       const response = await fetch(endpointUrl, {
         headers: {
           "Content-Type": "application/json",
@@ -109,7 +135,7 @@ export function RenderFunction({
             </a>
           ) : (
             <>
-              <div className="text-xs">Creating endpoint URL</div>
+              <div className="text-xs">Deploying code</div>
               {spinner}
             </>
           )}
@@ -122,7 +148,8 @@ export function RenderFunction({
               if (!endpointUrl) {
                 return;
               }
-              runMutation.mutate({ endpointUrl });
+              const shouldCreateNewDeployment = code !== latestDeploymentCode;
+              runMutation.mutate({ endpointUrl, shouldCreateNewDeployment });
             }}
           >
             {runMutation.isPending || !endpointUrl ? (

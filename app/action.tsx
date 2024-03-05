@@ -19,7 +19,11 @@ import { RenderFunction, RenderReact, RunSQL } from "@/components/autobuild";
 import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
 import { StockSkeleton } from "@/components/llm-stocks/stock-skeleton";
 import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
-import { createDenoDeployEndpoint } from "@/lib/deploy/createDenoDeployEndpoint";
+import {
+  Project,
+  createDenoDeployDeployment,
+  createProject as createDenoDeployProject,
+} from "@/lib/deploy/createDenoDeployEndpoint";
 import { queryDatabaseProgram } from "@/lib/deploy/programs";
 import {
   formatNumber,
@@ -30,6 +34,7 @@ import {
 import { z } from "zod";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
 import { queryDatabase } from "./queryD1Db";
+import { createDeployment } from "./createDeployment";
 
 function escapeBackticks(s: string) {
   return s.replace(/`/g, "\\`");
@@ -395,7 +400,8 @@ Use Request/Response from Web APIs.`),
         </BotCard>
       </>
     );
-    const endpoint = await createDenoDeployEndpoint({
+    const project = await createDenoDeployProject();
+    const endpoint = await createDenoDeployDeployment({
       assets: {
         "db.ts": {
           kind: "file",
@@ -431,6 +437,7 @@ export default async function handler(req: Request): Promise<Response> {
         CLOUDFLARE_API_TOKEN: process.env.CLOUDFLARE_API_TOKEN!,
         CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID!,
       },
+      project,
     });
 
     const result = isQuerySafe
@@ -523,7 +530,8 @@ export default async function handler(req: Request): Promise<Response> {
   });
 
   completion.onFunctionCall("create_endpoint", async ({ queryKey, code }) => {
-    const endpointPromise = createDenoDeployEndpoint({
+    const project = await createDenoDeployProject();
+    const deploymentPromise = createDenoDeployDeployment({
       assets: {
         "handler.ts": {
           kind: "file",
@@ -532,12 +540,9 @@ export default async function handler(req: Request): Promise<Response> {
         },
       },
       envVars: {},
+      project,
     });
 
-    async function run({ code }: { code: string }) {
-      "use server";
-      console.log("running code", code);
-    }
     async function save({ code }: { code: string }) {
       "use server";
       console.log("saving code", code);
@@ -552,13 +557,14 @@ export default async function handler(req: Request): Promise<Response> {
           <RenderFunction
             code={code}
             queryKey={queryKey}
-            run={run}
+            project={project}
             save={save}
+            initialDeployments={[]}
           />
         </BotMessage>
       </>
     );
-    const endpoint = await endpointPromise;
+    const deployment = await deploymentPromise;
     reply.update(
       <>
         {lastAssistantContent && (
@@ -568,9 +574,9 @@ export default async function handler(req: Request): Promise<Response> {
           <RenderFunction
             code={code}
             queryKey={queryKey}
-            run={run}
             save={save}
-            endpointUrl={endpoint.url}
+            project={project}
+            initialDeployments={[deployment]}
           />
         </BotMessage>
       </>
@@ -582,7 +588,11 @@ export default async function handler(req: Request): Promise<Response> {
       {
         role: "function",
         name: "create_endpoint",
-        content: JSON.stringify({ code, queryKey, endpointUrl: endpoint.url }),
+        content: JSON.stringify({
+          code,
+          queryKey,
+          endpointUrl: deployment.url,
+        }),
       },
     ]);
   });

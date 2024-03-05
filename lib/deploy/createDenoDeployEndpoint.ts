@@ -155,20 +155,20 @@ export function initCors(options?: CorsOptions) {
   return (req: Request, res: Response) => cors(req, res, options)
 }`;
 
-export async function createDenoDeployEndpoint({
-  assets,
-  envVars,
-}: {
-  assets: Assets;
-  envVars: Record<string, string>;
-}) {
-  const accessToken = process.env.DENO_DEPLOY_ACCESS_TOKEN;
-  const orgId = process.env.DENO_DEPLOY_ORG_ID;
-  const API = "https://api.deno.com/v1";
-  const headers = {
-    Authorization: `Bearer ${accessToken}`,
-    "Content-Type": "application/json",
-  };
+export type Project = {
+  id: string;
+  name: string;
+};
+
+const accessToken = process.env.DENO_DEPLOY_ACCESS_TOKEN;
+const orgId = process.env.DENO_DEPLOY_ORG_ID;
+const API = "https://api.deno.com/v1";
+const headers = {
+  Authorization: `Bearer ${accessToken}`,
+  "Content-Type": "application/json",
+};
+
+export async function createProject() {
   // 2.) Create a new project
   const pr = await fetch(`${API}/organizations/${orgId}/projects`, {
     method: "POST",
@@ -177,7 +177,19 @@ export async function createDenoDeployEndpoint({
       name: null, // randomly generates project name
     }),
   });
-  const project = await pr.json();
+  const project = (await pr.json()) as Project;
+  return project;
+}
+
+export async function createDenoDeployDeployment({
+  assets,
+  envVars,
+  project,
+}: {
+  assets: Assets;
+  envVars: Record<string, string>;
+  project: Project;
+}) {
   // 3.) Deploy a "hello world" server to the new project
   const dr = await fetch(`${API}/projects/${project.id}/deployments`, {
     method: "POST",
@@ -206,5 +218,5 @@ Deno.serve(async (req) => cors(req, await handler(req)));`,
   });
   const deployment = await dr.json();
   const url = `https://${project.name}-${deployment.id}.deno.dev`;
-  return { url, deployment };
+  return { url, deployment, project };
 }
