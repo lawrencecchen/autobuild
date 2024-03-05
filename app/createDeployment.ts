@@ -24,7 +24,6 @@ export async function createAndWaitDeployment({
     envVars: {},
     project,
   });
-  await new Promise((resolve) => setTimeout(resolve, 500));
   for await (const log of streamDeploymentLogs(newDeployment.deployment.id)) {
     if (log.level === "info" && log.message.startsWith("Deployed to")) {
       break;

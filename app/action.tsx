@@ -438,6 +438,7 @@ export default async function handler(req: Request): Promise<Response> {
         CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID!,
       },
       project,
+      waitForBuild: true,
     });
 
     const result = isQuerySafe

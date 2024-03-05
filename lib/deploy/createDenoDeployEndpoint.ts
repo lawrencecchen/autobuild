@@ -46,10 +46,12 @@ export async function createDenoDeployDeployment({
   assets,
   envVars,
   project,
+  waitForBuild,
 }: {
   assets: Assets;
   envVars: Record<string, string>;
   project: Project;
+  waitForBuild?: boolean;
 }) {
   // 3.) Deploy a "hello world" server to the new project
   const dr = await fetch(`${API}/projects/${project.id}/deployments`, {
@@ -79,6 +81,13 @@ Deno.serve(async (req) => cors(req, await handler(req)));`,
   });
   const deployment = (await dr.json()) as Deployment;
   const url = `https://${project.name}-${deployment.id}.deno.dev`;
+  if (waitForBuild) {
+    for await (const log of streamDeploymentLogs(deployment.id)) {
+      if (log.level === "info" && log.message.startsWith("Deployed to")) {
+        break;
+      }
+    }
+  }
   return { url, deployment, project };
 }
 

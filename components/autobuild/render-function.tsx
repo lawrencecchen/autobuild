@@ -1,5 +1,4 @@
 "use client";
-import { type AI } from "@/app/action";
 import {
   CreateDeploymentResponse,
   createAndWaitDeployment,
@@ -10,7 +9,6 @@ import { EditorView } from "@codemirror/view";
 import { PlayIcon } from "@radix-ui/react-icons";
 import { useMutation } from "@tanstack/react-query";
 import ReactCodeMirror from "@uiw/react-codemirror";
-import { useAIState } from "ai/rsc";
 import { Loader } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { spinner } from "../llm-stocks";
@@ -51,19 +49,11 @@ function Preview({ preview }: { preview: Preview }) {
 
 export function RenderFunction({
   code: initialCode,
-  save,
   queryKey,
   project,
   initialDeployments,
 }: {
   code: string;
-  save: ({
-    code,
-    project,
-  }: {
-    code: string;
-    project: Project;
-  }) => Promise<void>;
   queryKey: string;
   project: Project;
   initialDeployments: CreateDeploymentResponse[];
@@ -72,7 +62,6 @@ export function RenderFunction({
   const [deployments, setDeployments] = useState(initialDeployments);
   const latestDeployment = deployments[deployments.length - 1];
   const endpointUrl = latestDeployment?.url;
-  const [aiState, setAIState] = useAIState<typeof AI>();
   const [code, setCode] = useState(initialCode);
   const [preview, setPreview] = useState<Preview>();
 
@@ -84,6 +73,7 @@ export function RenderFunction({
       endpointUrl: string;
       shouldCreateNewDeployment: boolean;
     }) => {
+      const startTime = Date.now();
       if (shouldCreateNewDeployment) {
         const newDeployment = await createAndWaitDeployment({ code, project });
         endpointUrl = newDeployment.url;
@@ -101,6 +91,7 @@ export function RenderFunction({
       }
       const data = await response.json();
       setPreview({ type: "json", data });
+      console.log("Deployment took", Date.now() - startTime, "ms");
       return data;
     },
     onSuccess(newData) {},
