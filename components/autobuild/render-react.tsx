@@ -2,6 +2,7 @@ import { useWebContainer } from "@/lib/hooks/useWebContainer";
 import { javascript } from "@codemirror/lang-javascript";
 import { EditorView } from "@codemirror/view";
 import ReactCodeMirror from "@uiw/react-codemirror";
+import { RefreshCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 function convertToWebContainerUrl(
@@ -26,6 +27,7 @@ export default function Preview() {
 
 function RenderReactIframe({ id }: { id: string }) {
   const { url: webContainerUrl } = useWebContainer();
+  const [reloadBool, setReloadBool] = useState(1);
   function getIframePreviewUrl() {
     if (webContainerUrl) {
       return convertToWebContainerUrl(id, webContainerUrl);
@@ -41,11 +43,24 @@ function RenderReactIframe({ id }: { id: string }) {
     return <div>Spawning sandbox...</div>;
   }
   return (
-    <iframe
-      className="w-full h-full grow"
-      src={mainIframePreviewUrl}
-      ref={mainIframePreviewRef}
-    ></iframe>
+    <div className="flex flex-col h-full grow">
+      <div className="p-0.5">
+        <button
+          className="grid h-6 w-6 place-content-center rounded-full transition hover:bg-neutral-200 active:bg-black/15"
+          onClick={() => setReloadBool((prev) => prev * -1)}
+          // disabled={!isMainIframeReady}
+          title="Reload"
+        >
+          <RefreshCcw className="h-3.5 w-3.5 text-neutral-600" />
+        </button>
+      </div>
+      <iframe
+        key={reloadBool}
+        className="w-full h-full grow border rounded"
+        src={mainIframePreviewUrl}
+        ref={mainIframePreviewRef}
+      ></iframe>
+    </div>
   );
 }
 function createPath({ creationId }: { creationId: string }) {
@@ -150,7 +165,7 @@ export function RenderReact({
           }}
         />
       </div>
-      <div className="border rounded min-h-[300px] overflow-hidden flex flex-col resize-y">
+      <div className="min-h-[300px] overflow-hidden flex flex-col resize-y">
         <RenderReactIframe id={id} />
       </div>
     </div>

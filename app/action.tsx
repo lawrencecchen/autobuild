@@ -15,11 +15,14 @@ import {
   spinner,
 } from "@/components/llm-stocks";
 
-import { RenderReact, RunSQL } from "@/components/autobuild";
+import { RenderFunction, RenderReact, RunSQL } from "@/components/autobuild";
 import { EventsSkeleton } from "@/components/llm-stocks/events-skeleton";
 import { StockSkeleton } from "@/components/llm-stocks/stock-skeleton";
 import { StocksSkeleton } from "@/components/llm-stocks/stocks-skeleton";
-import { createDenoDeployEndpoint } from "@/lib/deploy/createDenoDeployEndpoint";
+import {
+  createDenoDeployDeployment,
+  createProject as createDenoDeployProject,
+} from "@/lib/deploy/createDenoDeployEndpoint";
 import { queryDatabaseProgram } from "@/lib/deploy/programs";
 import {
   formatNumber,
@@ -28,6 +31,7 @@ import {
   sleep,
 } from "@/lib/utils";
 import { z } from "zod";
+import { createAndWaitDeployment } from "./createDeployment";
 import { isQuerySafe as getIsQuerySafe } from "./isQuerySafe";
 import { queryDatabase } from "./queryD1Db";
 
@@ -222,6 +226,21 @@ ${databaseSchema}`,
         }),
       },
       {
+        name: "create_endpoint",
+        description: "Create a HTTP endpoint with TypeScript",
+        parameters: z.object({
+          queryKey: z
+            .string()
+            .describe(
+              "The endpoint's queryKey that React components will call useQuery({ queryKey: [queryKey, params] }) to access the result."
+            ),
+          code: z.string().describe(`\
+The code of the endpoint.
+Must include: export default async function handler(req: Request): Promise<Response>
+Use Request/Response from Web APIs.`),
+        }),
+      },
+      {
         name: "display_react",
         description: `Display a React component.`,
         parameters: z.object({
@@ -380,7 +399,8 @@ ${databaseSchema}`,
         </BotCard>
       </>
     );
-    const endpoint = await createDenoDeployEndpoint({
+    const project = await createDenoDeployProject();
+    const endpoint = await createDenoDeployDeployment({
       assets: {
         "db.ts": {
           kind: "file",
@@ -416,6 +436,8 @@ export default async function handler(req: Request): Promise<Response> {
         CLOUDFLARE_API_TOKEN: process.env.CLOUDFLARE_API_TOKEN!,
         CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID!,
       },
+      project,
+      waitForBuild: true,
     });
 
     const result = isQuerySafe
@@ -505,7 +527,60 @@ export default async function handler(req: Request): Promise<Response> {
         content: JSON.stringify({ code, render }),
       },
     ]);
-    // aiState.
+  });
+
+  completion.onFunctionCall("create_endpoint", async ({ queryKey, code }) => {
+    const project = await createDenoDeployProject();
+    const deploymentPromise = createAndWaitDeployment({
+      code,
+      project,
+    });
+
+    reply.update(
+      <>
+        {lastAssistantContent && (
+          <BotMessage>{lastAssistantContent}</BotMessage>
+        )}
+        <BotMessage>
+          <RenderFunction
+            code={code}
+            queryKey={queryKey}
+            project={project}
+            initialDeployments={[]}
+          />
+        </BotMessage>
+      </>
+    );
+    const deployment = await deploymentPromise;
+    reply.update(
+      <>
+        {lastAssistantContent && (
+          <BotMessage>{lastAssistantContent}</BotMessage>
+        )}
+        <BotMessage>
+          <RenderFunction
+            code={code}
+            queryKey={queryKey}
+            project={project}
+            initialDeployments={[deployment]}
+          />
+        </BotMessage>
+      </>
+    );
+
+    reply.done();
+    aiState.done([
+      ...aiState.get(),
+      {
+        role: "function",
+        name: "create_endpoint",
+        content: JSON.stringify({
+          code,
+          queryKey,
+          endpointUrl: deployment.url,
+        }),
+      },
+    ]);
   });
 
   completion.onFunctionCall("list_stocks", async ({ stocks }) => {
