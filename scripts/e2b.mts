@@ -8,13 +8,14 @@ try {
   const result = await sandbox.process.startAndWait("node --version");
   console.log(result);
   console.log(await sandbox.process.startAndWait("python3 --version"));
-  // console.log(await sandbox.process.startAndWait("bun --version"));
+  console.log(await sandbox.process.startAndWait("docker --version"));
   console.log(
     (await sandbox.process.startAndWait("curl http://ipinfo.io/json")).stdout
   );
   now = performance.now();
   await sandbox.close();
   console.log("Sandbox closed in", performance.now() - now, "ms");
+  process.exit(0);
 } catch (e) {
   console.error(e);
 }
