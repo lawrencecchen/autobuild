@@ -1,15 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-
-import { UserMessage } from "@/components/llm-stocks/message";
-import { useAIState, useActions, useUIState } from "ai/rsc";
-
-import { ChatScrollAnchor } from "@/lib/hooks/chat-scroll-anchor";
-import { type AI } from "./action";
-// import { FooterText } from '@/components/footer';
 import { ChatList } from "@/components/chat-list";
 import { EmptyScreen } from "@/components/empty-screen";
+import { UserMessage } from "@/components/llm-stocks/message";
 import { Button } from "@/components/ui/button";
 import { IconArrowElbow, IconPlus } from "@/components/ui/icons";
 import {
@@ -17,9 +10,13 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ChatScrollAnchor } from "@/lib/hooks/chat-scroll-anchor";
 import { useEnterSubmit } from "@/lib/hooks/use-enter-submit";
 import { useWebContainer } from "@/lib/hooks/useWebContainer";
+import { useAIState, useActions, useUIState } from "ai/rsc";
+import { useEffect, useRef, useState } from "react";
 import Textarea from "react-textarea-autosize";
+import { type AI } from "./action";
 
 export default function Page() {
   const [aiState] = useAIState<typeof AI>();
